@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   Kids Daily Learning — design tokens
+   Daytime (light) is the default; "night sky" (dark) follows the OS
+   unless the root carries data-theme="light".
+   ------------------------------------------------------------------ */
+:root {
+  --bg: 242 246 255;
+  --surface: 255 255 255;
+  --sunken: 232 238 250;
+  --ink: 29 35 64;
+  --muted: 86 95 130;
+  --line: 218 226 242;
+  --shadow: 200 210 234;
+  --sun: 255 197 61;
+  --sun-deep: 214 146 18;
+  --flame: 255 122 61;
+  --good: 22 150 92;
+  --oops: 226 106 52;
+  --english: 255 111 97;
+  --math: 58 160 255;
+  --science: 47 191 113;
+  --gk: 20 184 166;
+  --story: 139 92 246;
+  --brain: 240 80 140;
+  --creativity: 255 138 31;
+  --habit: 110 190 60;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: 17 23 48;
+    --surface: 28 36 70;
+    --sunken: 22 29 58;
+    --ink: 238 241 255;
+    --muted: 168 176 216;
+    --line: 50 60 104;
+    --shadow: 9 13 30;
+    --good: 74 214 145;
+    --oops: 255 150 100;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: 17 23 48;
+  --surface: 28 36 70;
+  --sunken: 22 29 58;
+  --ink: 238 241 255;
+  --muted: 168 176 216;
+  --line: 50 60 104;
+  --shadow: 9 13 30;
+  --good: 74 214 145;
+  --oops: 255 150 100;
+  color-scheme: dark;
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  html.large-text { font-size: 112.5%; }
+  body {
+    @apply bg-bg text-ink font-body antialiased;
+    font-weight: 600;
+  }
+  h1, h2, h3, h4 { @apply font-display; font-weight: 600; text-wrap: balance; letter-spacing: -0.01em; }
+  :focus-visible { outline: 3px solid rgb(var(--math)); outline-offset: 3px; border-radius: 12px; }
+  button, [role="button"], a { -webkit-tap-highlight-color: transparent; }
+  .tnum { font-variant-numeric: tabular-nums; }
+}
+
+@layer components {
+  /* Chunky, pressable button (min 48px touch target). */
+  .btn {
+    @apply inline-flex min-h-[48px] select-none items-center justify-center gap-2 rounded-2xl px-5 font-display text-lg font-semibold transition-[transform,box-shadow] duration-100 active:translate-y-[3px] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary { @apply btn bg-sun text-[#1D2340]; box-shadow: 0 4px 0 0 rgb(var(--sun-deep)); }
+  .btn-primary:active { box-shadow: 0 1px 0 0 rgb(var(--sun-deep)); }
+  .btn-secondary { @apply btn border-2 border-line bg-surface text-ink; box-shadow: 0 4px 0 0 rgb(var(--shadow)); }
+  .btn-secondary:active { box-shadow: 0 1px 0 0 rgb(var(--shadow)); }
+  .btn-ghost { @apply btn bg-transparent text-ink hover:bg-sunken; }
+  .btn-sm { @apply min-h-[44px] rounded-xl px-4 text-base; }
+
+  .card { @apply rounded-card border-2 border-line bg-surface; }
+  .chip { @apply inline-flex items-center gap-1.5 rounded-full bg-sunken px-3 py-1 text-sm font-bold; }
+  .label { @apply text-xs font-extrabold uppercase tracking-[0.08em] text-muted; }
+  .field {
+    @apply min-h-[48px] w-full rounded-2xl border-2 border-line bg-surface px-4 text-base text-ink placeholder:text-muted/70 focus:border-math focus:outline-none;
+  }
+}
+
+/* Motion: subtle by default, off when the child/parent or OS asks. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after {
+  animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important;
+}
