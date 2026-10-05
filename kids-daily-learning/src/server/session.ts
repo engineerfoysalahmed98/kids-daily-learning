@@ -24,6 +24,11 @@ function secret(): Uint8Array {
   return new TextEncoder().encode(s);
 }
 
+/** Throws early (before any writes) when sessions can't be signed. */
+export function assertSessionSecret(): void {
+  secret();
+}
+
 export async function signSession(c: SessionClaims): Promise<string> {
   return new SignJWT({ pid: c.pid, role: c.role, mode: c.mode, cid: c.cid, sv: c.sv })
     .setProtectedHeader({ alg: "HS256" })
