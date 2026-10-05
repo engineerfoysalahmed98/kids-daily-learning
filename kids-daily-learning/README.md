@@ -29,7 +29,13 @@ Set these Environment Variables (Production, and Preview if used) before deployi
 | `AUTH_SECRET` | 32+ random characters (`openssl rand -base64 48`). Changing it logs everyone out. |
 | `NEXT_PUBLIC_DATA_MODE` | `api` |
 
-Vercel runs `npm run vercel-build`, which applies pending migrations (`prisma migrate deploy`) before `next build`, so tables are created on first deploy. Run `npm run db:seed` once against the production database to load the curriculum (optional: built-in content is used until then). If the database already has tables from an earlier `db:push`, baseline it once with `npx prisma migrate resolve --applied 20261005000000_init`.
+The Vercel build (`npm run build`) never touches the database. Create the tables separately — once now, and again whenever `prisma/migrations` changes — by running this from your machine with the production connection string:
+
+```bash
+DATABASE_URL="<production url>" npm run db:deploy
+```
+
+`migrate deploy` only applies pending migrations; it never resets or deletes data. Optionally run `npm run db:seed` the same way to load the curriculum (built-in content is used until then). If the database already has tables from an earlier `db:push`, baseline it once with `npx prisma migrate resolve --applied 20261005000000_init` instead.
 
 No database yet? Run `npm run dev:mock` and the whole app runs on in-browser demo data. The same mock powers the single-file playable demo: run `npm run demo:build` to produce `demo/dist/kids-daily-learning-demo.html`.
 
