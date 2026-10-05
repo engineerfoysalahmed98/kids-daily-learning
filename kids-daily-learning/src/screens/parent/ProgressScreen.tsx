@@ -31,10 +31,10 @@ function Body() {
 
   return (
     <div className="grid gap-5">
-      <ChildSwitcher children={fam.data.children} selected={child.id} onSelect={select} />
+      <ChildSwitcher kids={fam.data.children} selected={child.id} onSelect={select} />
 
       <section aria-labelledby="subjects" className="grid gap-3">
-        <h2 id="subjects" className="text-xl">{child.name}'s subjects</h2>
+        <h2 id="subjects" className="text-xl">{child.name}&apos;s subjects</h2>
         <ul className="grid grid-cols-2 gap-3 md:grid-cols-3">
           {tracks.map((t) => {
             const lvl = decideLevel(child, t === "gk" ? "science" : t, p.completions, addDays(today, 1), fam.data!.content.ageGroups);

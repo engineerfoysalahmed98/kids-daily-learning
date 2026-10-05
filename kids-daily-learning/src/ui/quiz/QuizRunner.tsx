@@ -89,7 +89,7 @@ export function QuizRunner({ activity, soundOn, onFinish, onExit, submitting }: 
       )}
 
       <Modal open={confirmExit} onClose={() => setConfirmExit(false)} title="Take a break?">
-        <p className="text-muted">Your answers for this quiz won't be saved, but you can start again any time.</p>
+        <p className="text-muted">Your answers for this quiz won&apos;t be saved, but you can start again any time.</p>
         <div className="mt-5 flex gap-3">
           <button className="btn-secondary flex-1" onClick={onExit}>Leave</button>
           <button className="btn-primary flex-1" onClick={() => setConfirmExit(false)}>Keep going</button>

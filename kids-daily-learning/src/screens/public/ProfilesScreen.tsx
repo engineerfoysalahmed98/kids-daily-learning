@@ -42,7 +42,7 @@ export function ProfilesScreen() {
             : <Link to="/parent" className="btn-secondary btn-sm">📊 Parent Dashboard</Link>}
         </div>
         <div className="text-center">
-          <h1 className="text-4xl sm:text-5xl">Who's learning today?</h1>
+          <h1 className="text-4xl sm:text-5xl">Who&apos;s learning today?</h1>
           <p className="mt-2 text-lg font-bold text-muted">Tap your picture to start.</p>
         </div>
         {kids.error ? <ErrorState error={kids.error} onRetry={kids.reload} /> : !kids.data ? (

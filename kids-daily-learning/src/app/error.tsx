@@ -6,7 +6,7 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
       <div className="card grid max-w-sm place-items-center gap-3 p-8" role="alert">
         <span className="text-5xl" aria-hidden="true">🤖</span>
         <h1 className="text-2xl">Oops, something went wrong</h1>
-        <p className="text-muted">Let's try that again.</p>
+        <p className="text-muted">Let&apos;s try that again.</p>
         <button className="btn-primary" onClick={reset}>Try again</button>
       </div>
     </main>

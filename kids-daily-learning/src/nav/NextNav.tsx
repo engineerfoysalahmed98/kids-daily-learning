@@ -12,10 +12,10 @@ function NextLinkAdapter({ to, children, ...rest }: LinkProps) {
 export function NextNavProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname() ?? "/";
-  const raw = useParams() ?? {};
+  const raw = useParams();
   const params = useMemo(() => {
     const out: Record<string, string> = {};
-    for (const [k, v] of Object.entries(raw)) out[k] = decodeURIComponent(Array.isArray(v) ? v.join("/") : String(v));
+    for (const [k, v] of Object.entries(raw ?? {})) out[k] = decodeURIComponent(Array.isArray(v) ? v.join("/") : String(v));
     return out;
   }, [raw]);
 

@@ -33,11 +33,11 @@ export function useSelectedChild(children: Child[] | undefined) {
   return { child, select };
 }
 
-export function ChildSwitcher({ children, selected, onSelect }: { children: Child[]; selected?: string; onSelect: (id: string) => void }) {
-  if (children.length < 2) return null;
+export function ChildSwitcher({ kids, selected, onSelect }: { kids: Child[]; selected?: string; onSelect: (id: string) => void }) {
+  if (kids.length < 2) return null;
   return (
     <div role="tablist" aria-label="Choose a child" className="flex flex-wrap gap-2">
-      {children.map((c) => (
+      {kids.map((c) => (
         <button key={c.id} role="tab" aria-selected={selected === c.id} onClick={() => onSelect(c.id)}
           className={`flex min-h-[48px] items-center gap-2 rounded-2xl border-2 px-4 font-bold ${selected === c.id ? "border-ink bg-surface" : "border-transparent bg-sunken text-muted hover:text-ink"}`}>
           <span className="text-2xl" aria-hidden="true">{c.avatar}</span>{c.name}
