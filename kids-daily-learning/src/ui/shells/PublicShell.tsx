@@ -14,9 +14,6 @@ export function PublicShell({ children }: { children: ReactNode }) {
         <Link to="/" aria-label="Kids Daily Learning home"><Logo /></Link>
         <nav aria-label="Site" className="ml-auto flex items-center gap-1 sm:gap-2">
           <Link to="/safety" className="hidden min-h-[44px] items-center rounded-xl px-3 font-bold text-muted hover:text-ink sm:inline-flex">Safety</Link>
-          {loggedIn
-            ? <Link to="/parent" className="btn-secondary btn-sm">Parent area</Link>
-            : <Link to="/login" className="btn-ghost btn-sm">For parents</Link>}
           <Link to={loggedIn && session?.mode !== "child" ? "/profiles" : "/home"} className="btn-primary btn-sm">Start Learning</Link>
         </nav>
       </header>
@@ -29,8 +26,6 @@ export function PublicShell({ children }: { children: ReactNode }) {
           </div>
           <nav aria-label="Footer" className="flex flex-wrap items-start gap-x-5 gap-y-2 text-sm font-bold text-muted">
             <Link to="/safety" className="hover:text-ink">Privacy & Safety</Link>
-            <Link to="/login" className="hover:text-ink">For parents (optional)</Link>
-            <Link to="/admin" className="hover:text-ink">Content admin</Link>
           </nav>
         </div>
       </footer>

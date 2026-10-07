@@ -7,6 +7,7 @@ import { LogoMark, BuddyBot } from "../brand";
 import { Spinner, ErrorState } from "../primitives";
 import { ParentGate } from "../ParentGate";
 import { GuestSetup } from "../GuestSetup";
+import { isGuestSession } from "@/state/guestService";
 import { dayKey } from "@/core/engine";
 
 const NAV = [
@@ -104,7 +105,9 @@ export function ChildShell({ children, focus = false }: { children: ReactNode; f
               <BuddyBot size={40} /> Ask Buddy
             </Link>
           )}
-          <button className="mt-auto text-left text-sm font-bold text-muted underline-offset-4 hover:underline" onClick={() => setGate(true)}>🔒 Grown-ups</button>
+          {!isGuestSession(session) && (
+            <button className="mt-auto text-left text-sm font-bold text-muted underline-offset-4 hover:underline" onClick={() => setGate(true)}>🔒 Grown-ups</button>
+          )}
         </aside>
 
         <div className="min-w-0">

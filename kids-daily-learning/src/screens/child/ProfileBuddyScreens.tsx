@@ -58,7 +58,7 @@ function MeBody() {
         {guest
           ? <button className="btn-secondary" onClick={() => setEditing(true)}>✏️ Edit my profile</button>
           : <button className="btn-secondary" onClick={() => setGate("/profiles")}>👥 Switch profile</button>}
-        <button className="btn-secondary" onClick={() => setGate("/parent")}>🔒 Grown-ups</button>
+        {!guest && <button className="btn-secondary" onClick={() => setGate("/parent")}>🔒 Grown-ups</button>}
       </div>
       {guest
         ? <p className="text-center text-sm font-bold text-muted">No account needed. Your progress is saved on this device. <Link to="/safety" className="underline">How we keep you safe</Link></p>
