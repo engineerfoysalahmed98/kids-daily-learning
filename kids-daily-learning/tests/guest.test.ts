@@ -111,3 +111,18 @@ describe("logged-in parent", () => {
     expect(inner.exitChildMode).toHaveBeenCalledWith("1234");
   });
 });
+
+describe("account service unavailable", () => {
+  it("keeps the on-device guest learning when the session check fails", async () => {
+    const inner = innerService();
+    const svc = new GuestAwareService(asService(inner));
+    await svc.getSession();
+    await svc.createChild({ name: "Mim", age: 6, avatar: "🦊" });
+    inner.getSession.mockRejectedValue(new ServiceError("We can't reach our database right now.", 503));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const s = await svc.getSession();
+    expect(isGuestSession(s)).toBe(true);
+    expect((await svc.getProgress(GUEST_CHILD_ID)).child.name).toBe("Mim");
+    warn.mockRestore();
+  });
+});

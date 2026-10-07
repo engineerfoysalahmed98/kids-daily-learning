@@ -93,7 +93,15 @@ export class GuestAwareService implements DataService {
   // ------------------------------------------------------------ session
 
   async getSession(): Promise<Session> {
-    const s = await this.inner.getSession();
+    let s: Session;
+    try {
+      s = await this.inner.getSession();
+    } catch (e) {
+      // The account service is unavailable (e.g. database down with an old session cookie):
+      // keep learning as a guest rather than losing the on-device profile.
+      console.warn("[guest] Session check failed; continuing as a guest.", e);
+      s = { parent: null, activeChildId: null, mode: null };
+    }
     this.loggedIn = !!s.parent;
     if (s.parent) return s;
     return { parent: null, activeChildId: this.record() ? GUEST_CHILD_ID : null, mode: null };
@@ -207,7 +215,7 @@ export class GuestAwareService implements DataService {
 
   /** Buddy (AI) needs a grown-up's account and consent. */
   async askBuddy(childId: string, message: string): Promise<BuddyAnswer> {
-    if (this.isGuestChild(childId)) throw new ServiceError("Buddy needs a grown-up to switch it on with a free parent account.", 403);
+    if (this.isGuestChild(childId)) throw new ServiceError("Buddy is switched off while learning without an account.", 403);
     return this.inner.askBuddy(childId, message);
   }
 

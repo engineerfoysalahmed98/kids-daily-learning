@@ -30,8 +30,7 @@ export function GuestSetup({ initial, onDone, onCancel }: { initial?: ChildFormV
         </div>
         <div className="card p-5 sm:p-6">{form}</div>
         <p className="text-center text-sm font-bold text-muted">
-          No account needed. Progress is saved on this device.{" "}
-          Grown-ups: <Link to="/signup" className="underline underline-offset-4">create a free parent account</Link> to save progress across devices and see the dashboard.
+          No account needed. Progress is saved on this device.
         </p>
       </div>
     </div>

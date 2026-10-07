@@ -61,7 +61,7 @@ function MeBody() {
         <button className="btn-secondary" onClick={() => setGate("/parent")}>🔒 Grown-ups</button>
       </div>
       {guest
-        ? <p className="text-center text-sm font-bold text-muted">Your progress is saved on this device only. Grown-ups: <Link to="/signup" className="underline">create a free parent account</Link> to keep progress across devices and set goals and screen time.</p>
+        ? <p className="text-center text-sm font-bold text-muted">No account needed. Your progress is saved on this device. <Link to="/safety" className="underline">How we keep you safe</Link></p>
         : <p className="text-center text-sm font-bold text-muted">Only your first name, age and animal avatar are saved. <Link to="/safety" className="underline">How we keep you safe</Link></p>}
       <Modal open={editing} onClose={() => setEditing(false)} title="Edit my profile">
         <GuestSetup initial={{ name: child.name, age: child.age, avatar: child.avatar }} onDone={() => setEditing(false)} onCancel={() => setEditing(false)} />
@@ -90,7 +90,7 @@ function BuddyBody() {
   if (!progress || !childId) return <Skeleton className="h-96" />;
   const child = progress.child;
   if (!child.settings.aiEnabled && isGuestSession(session)) {
-    return <EmptyState emoji="🤖" title="Buddy is resting" body="Buddy can be switched on by a grown-up with a free parent account. You can still learn with all your activities!" action={<Link to="/home" className="btn-primary">Back to activities</Link>} />;
+    return <EmptyState emoji="🤖" title="Buddy is resting" body="Buddy is switched off while learning without an account. You can still learn with all your activities!" action={<Link to="/home" className="btn-primary">Back to activities</Link>} />;
   }
   if (!child.settings.aiEnabled) {
     return <EmptyState emoji="🤖" title="Buddy is resting" body="A grown-up has switched Buddy off. You can still learn with all your activities!" action={<Link to="/home" className="btn-primary">Back to activities</Link>} />;
