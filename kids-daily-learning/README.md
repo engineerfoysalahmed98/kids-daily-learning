@@ -19,6 +19,8 @@ npm run dev                       # http://localhost:3000
 
 Demo login: **demo@kidsdaily.app / learn2day**. The demo parent is also a content admin.
 
+**No account needed to learn.** Visitors tap *Start Learning*, pick a nickname, age and avatar, and use lessons, quizzes, stories, games, rewards and their profile straight away. Guest progress is kept on that device only (`src/state/guestService.ts`) and never sent to the database; Buddy (AI) stays off until a grown-up creates a parent account. Parent accounts add synced progress, multiple children, goals, screen-time limits and the dashboard. Parent pages (`/parent`, `/profiles`) and content admin (`/admin`) still require a login, and admin also requires the ADMIN role.
+
 ### Deploying to Vercel
 
 Set these Environment Variables (Production, and Preview if used) before deploying:
@@ -35,7 +37,7 @@ The Vercel build (`npm run build`) never touches the database. Create the tables
 DATABASE_URL="<production url>" npm run db:deploy
 ```
 
-`migrate deploy` only applies pending migrations; it never resets or deletes data. Optionally run `npm run db:seed` the same way to load the curriculum (built-in content is used until then). If the database already has tables from an earlier `db:push`, baseline it once with `npx prisma migrate resolve --applied 20261005000000_init` instead.
+`migrate deploy` only applies pending migrations; it never resets or deletes data. Then run `npm run db:seed` the same way to load the curriculum (until then the built-in curriculum is served). If the database already has tables from an earlier `db:push`, baseline it once with `npx prisma migrate resolve --applied 20261005000000_init` instead.
 
 No database yet? Run `npm run dev:mock` and the whole app runs on in-browser demo data. The same mock powers the single-file playable demo: run `npm run demo:build` to produce `demo/dist/kids-daily-learning-demo.html`.
 

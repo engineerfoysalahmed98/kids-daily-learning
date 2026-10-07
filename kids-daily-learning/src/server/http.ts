@@ -2,6 +2,7 @@ import "server-only";
 import { NextResponse, type NextRequest } from "next/server";
 import { ZodError, type ZodSchema } from "zod";
 import { cookies } from "next/headers";
+import { Prisma } from "@prisma/client";
 import { db } from "./db";
 import { SESSION_COOKIE, verifySession, type SessionClaims } from "./session";
 
@@ -23,9 +24,22 @@ export function route<C = unknown>(handler: (req: NextRequest, ctx: C) => Promis
         return json({ error: issue?.message ?? "Invalid input.", field: issue?.path.join(".") }, 400);
       }
       console.error("[api]", req.method, req.nextUrl.pathname, e);
+      if (isDatabaseUnavailable(e)) {
+        return json({ error: "We can't reach our database right now, so accounts and saved progress are unavailable. Please try again in a few minutes." }, 503);
+      }
       return json({ error: "Something went wrong on our side. Please try again." }, 500);
     }
   };
+}
+
+/**
+ * Connection/setup failures (unreachable server, timeouts, missing DATABASE_URL,
+ * tables not migrated) as opposed to bugs. The full error is still logged above.
+ */
+const DB_UNAVAILABLE_CODES = new Set(["P1000", "P1001", "P1002", "P1008", "P1017", "P2021", "P2024"]);
+function isDatabaseUnavailable(e: unknown): boolean {
+  if (e instanceof Prisma.PrismaClientInitializationError) return true;
+  return e instanceof Prisma.PrismaClientKnownRequestError && DB_UNAVAILABLE_CODES.has(e.code);
 }
 
 export async function body<T>(req: NextRequest, schema: ZodSchema<T>): Promise<T> {

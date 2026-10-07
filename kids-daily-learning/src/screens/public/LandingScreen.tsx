@@ -27,7 +27,8 @@ const FAQ = [
 
 export function LandingScreen() {
   const { session } = useApp();
-  const start = session?.mode === "child" ? "/home" : session?.parent ? "/profiles" : "/signup";
+  // No account needed: logged-out visitors go straight to learning (as a guest).
+  const start = session?.parent && session.mode !== "child" ? "/profiles" : "/home";
   return (
     <PublicShell>
       {/* Hero */}
@@ -40,7 +41,7 @@ export function LandingScreen() {
           <p className="max-w-xl text-xl text-muted">Fun daily activities that help children build knowledge, creativity and healthy habits.</p>
           <div className="flex flex-wrap gap-3">
             <Link to={start} className="btn-primary px-7 text-xl">Start Learning</Link>
-            <Link to={session?.parent ? "/parent" : "/login"} className="btn-secondary px-7 text-xl">Parent Dashboard</Link>
+            <Link to={session?.parent ? "/parent" : "/login"} className="btn-secondary px-7 text-xl">{session?.parent ? "Parent Dashboard" : "Parent Login"}</Link>
           </div>
           <p className="text-sm font-bold text-muted">No ads · No in-app purchases · Parents in control</p>
         </div>

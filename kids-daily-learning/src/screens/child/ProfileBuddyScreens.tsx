@@ -9,17 +9,22 @@ import { useChildData } from "@/state/useChild";
 import { useNav, Link } from "@/nav/nav";
 import { ChildShell } from "@/ui/shells/ChildShell";
 import { BuddyBot } from "@/ui/brand";
-import { ProgressBar, Skeleton, StatChip, EmptyState } from "@/ui/primitives";
+import { Modal, ProgressBar, Skeleton, StatChip, EmptyState } from "@/ui/primitives";
 import { toneOf } from "@/ui/colors";
 import { ParentGate } from "@/ui/ParentGate";
+import { GuestSetup } from "@/ui/GuestSetup";
+import { isGuestSession } from "@/state/guestService";
 import { SpeakButton } from "@/ui/quiz/QuestionView";
 
 // ---------------------------------------------------------------- Child profile
 
 function MeBody() {
   const { progress, content, summary } = useChildData();
+  const { session } = useApp();
+  const guest = isGuestSession(session);
   const nav = useNav();
   const [gate, setGate] = useState<null | "/profiles" | "/parent">(null);
+  const [editing, setEditing] = useState(false);
   if (!progress || !content || !summary) return <Skeleton className="h-96" />;
   const child = progress.child;
   const group = ageGroupFor(child.age, content.ageGroups);
@@ -50,10 +55,17 @@ function MeBody() {
         </ul>
       </section>
       <div className="grid gap-3 sm:grid-cols-2">
-        <button className="btn-secondary" onClick={() => setGate("/profiles")}>👥 Switch profile</button>
+        {guest
+          ? <button className="btn-secondary" onClick={() => setEditing(true)}>✏️ Edit my profile</button>
+          : <button className="btn-secondary" onClick={() => setGate("/profiles")}>👥 Switch profile</button>}
         <button className="btn-secondary" onClick={() => setGate("/parent")}>🔒 Grown-ups</button>
       </div>
-      <p className="text-center text-sm font-bold text-muted">Only your first name, age and animal avatar are saved. <Link to="/safety" className="underline">How we keep you safe</Link></p>
+      {guest
+        ? <p className="text-center text-sm font-bold text-muted">Your progress is saved on this device only. Grown-ups: <Link to="/signup" className="underline">create a free parent account</Link> to keep progress across devices and set goals and screen time.</p>
+        : <p className="text-center text-sm font-bold text-muted">Only your first name, age and animal avatar are saved. <Link to="/safety" className="underline">How we keep you safe</Link></p>}
+      <Modal open={editing} onClose={() => setEditing(false)} title="Edit my profile">
+        <GuestSetup initial={{ name: child.name, age: child.age, avatar: child.avatar }} onDone={() => setEditing(false)} onCancel={() => setEditing(false)} />
+      </Modal>
       <ParentGate open={gate !== null} onClose={() => setGate(null)} onPass={() => { const to = gate!; setGate(null); nav.go(to); }} />
     </div>
   );
@@ -65,7 +77,7 @@ export function MeScreen() { return <ChildShell><MeBody /></ChildShell>; }
 interface Msg { from: "child" | "buddy"; text: string; followUp?: string; blocked?: boolean; }
 
 function BuddyBody() {
-  const { service } = useApp();
+  const { service, session } = useApp();
   const { progress, childId } = useChildData();
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [text, setText] = useState("");
@@ -77,6 +89,9 @@ function BuddyBody() {
 
   if (!progress || !childId) return <Skeleton className="h-96" />;
   const child = progress.child;
+  if (!child.settings.aiEnabled && isGuestSession(session)) {
+    return <EmptyState emoji="🤖" title="Buddy is resting" body="Buddy can be switched on by a grown-up with a free parent account. You can still learn with all your activities!" action={<Link to="/home" className="btn-primary">Back to activities</Link>} />;
+  }
   if (!child.settings.aiEnabled) {
     return <EmptyState emoji="🤖" title="Buddy is resting" body="A grown-up has switched Buddy off. You can still learn with all your activities!" action={<Link to="/home" className="btn-primary">Back to activities</Link>} />;
   }

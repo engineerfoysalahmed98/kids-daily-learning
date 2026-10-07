@@ -16,8 +16,8 @@ export function PublicShell({ children }: { children: ReactNode }) {
           <Link to="/safety" className="hidden min-h-[44px] items-center rounded-xl px-3 font-bold text-muted hover:text-ink sm:inline-flex">Safety</Link>
           {loggedIn
             ? <Link to="/parent" className="btn-secondary btn-sm">Parent area</Link>
-            : <Link to="/login" className="btn-ghost btn-sm">Log in</Link>}
-          <Link to={session?.mode === "child" ? "/home" : loggedIn ? "/profiles" : "/signup"} className="btn-primary btn-sm">Start Learning</Link>
+            : <Link to="/login" className="btn-ghost btn-sm">Parent login</Link>}
+          <Link to={loggedIn && session?.mode !== "child" ? "/profiles" : "/home"} className="btn-primary btn-sm">Start Learning</Link>
         </nav>
       </header>
       <main id="main">{children}</main>

@@ -1,7 +1,9 @@
-import { json, requireSession, route } from "@/server/http";
+import { json, route } from "@/server/http";
 import { loadContent } from "@/server/content";
 
-export const GET = route(async () => {
-  await requireSession();
-  return json(await loadContent());
-});
+/**
+ * Public, read-only curriculum (lessons, stories, games, badges). Contains no
+ * personal data, so guests can learn without an account. Editing stays
+ * admin-only via /api/admin/content/[type].
+ */
+export const GET = route(async () => json(await loadContent()));

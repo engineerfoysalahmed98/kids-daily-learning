@@ -76,6 +76,12 @@ export async function recordCompletion(args: {
       update: { current: r.streak.current, longest: r.streak.longest, lastDay: r.streak.lastDay },
     });
     if (r.newBadges.length) {
+      // Badges may come from the built-in curriculum (Badge table not seeded yet); make sure the
+      // rows exist so the foreign key holds. Existing rows (including admin edits) are left as they are.
+      await tx.badge.createMany({
+        data: r.newBadges.map((b) => ({ id: b.id, name: b.name, icon: b.icon, description: b.description, rule: b.rule as never, sortOrder: Math.max(0, content.badges.findIndex((x) => x.id === b.id)) })),
+        skipDuplicates: true,
+      });
       await tx.childBadge.createMany({ data: r.newBadges.map((b) => ({ childId, badgeId: b.id })), skipDuplicates: true });
     }
     await tx.progress.upsert({
