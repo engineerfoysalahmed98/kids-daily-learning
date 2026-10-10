@@ -260,7 +260,7 @@ function CreateBody() {
           </div>
         </div>
       </div>
-      <p className="text-sm font-bold text-muted">🔒 Your drawing stays on this device. Prefer paper? Draw there and tap “I'm done!” when you finish.</p>
+      <p className="text-sm font-bold text-muted">🔒 Your drawing stays on this device. Prefer paper? Draw there and tap “I&apos;m done!” when you finish.</p>
       {error && <p role="alert" className="font-bold text-oops">{error}</p>}
       <button className="btn-primary w-full" disabled={submitting} onClick={() => void submit({ kind: "done", seconds: Math.round((Date.now() - started.current) / 1000) })}>
         {submitting ? "Saving…" : strokes ? "I'm done! 🎨" : "I made it on paper! ✏️"}

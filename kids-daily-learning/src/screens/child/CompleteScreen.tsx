@@ -76,7 +76,7 @@ function CompleteBody() {
           </div>
         </div>
         {streakText && <p className="w-full rounded-2xl bg-flame/15 px-4 py-3 font-bold">{streakText}</p>}
-        {result.goalReachedNow && <p className="w-full rounded-2xl bg-science/15 px-4 py-3 font-bold">🎯 You reached today's goal of {s.goal} activities!</p>}
+        {result.goalReachedNow && <p className="w-full rounded-2xl bg-science/15 px-4 py-3 font-bold">🎯 You reached today&apos;s goal of {s.goal} activities!</p>}
         {c.repeat && <p className="text-sm font-bold text-muted">You already did this one today, so it gives practice XP. New activities give full XP!</p>}
       </section>
 
@@ -96,7 +96,7 @@ function CompleteBody() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         {next ? <Link to={activityHref(next)} className="btn-primary sm:col-span-2">Next: {next.icon} {next.title}</Link>
-          : <p className="rounded-2xl bg-science/15 px-4 py-3 font-bold sm:col-span-2">🌈 You finished today's whole adventure!</p>}
+          : <p className="rounded-2xl bg-science/15 px-4 py-3 font-bold sm:col-span-2">🌈 You finished today&apos;s whole adventure!</p>}
         <Link to="/home" className="btn-secondary">🏠 Home</Link>
         <Link to="/rewards" className="btn-secondary">🏆 My rewards</Link>
       </div>

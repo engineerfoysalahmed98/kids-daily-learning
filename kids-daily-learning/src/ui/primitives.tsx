@@ -107,7 +107,7 @@ export function ErrorState({ error, onRetry }: { error: Error; onRetry?: () => v
   return (
     <div className="card grid place-items-center gap-3 px-6 py-10 text-center" role="alert">
       <BuddyBot size={64} mood="thinking" />
-      <h3 className="text-xl">Oops, that didn't load</h3>
+      <h3 className="text-xl">Oops, that didn&apos;t load</h3>
       <p className="max-w-sm text-muted">{error.message}</p>
       {onRetry && <button className="btn-secondary btn-sm" onClick={onRetry}>Try again</button>}
     </div>

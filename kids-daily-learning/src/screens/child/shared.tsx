@@ -86,8 +86,8 @@ export function NotFound({ what = "activity" }: { what?: string }) {
   return (
     <div className="card mx-auto mt-8 grid max-w-md place-items-center gap-3 p-8 text-center">
       <span className="text-5xl" aria-hidden="true">🧭</span>
-      <h1 className="text-2xl">We couldn't find that {what}</h1>
-      <p className="text-muted">It may have changed. Let's pick something from today's adventure.</p>
+      <h1 className="text-2xl">We couldn&apos;t find that {what}</h1>
+      <p className="text-muted">It may have changed. Let&apos;s pick something from today&apos;s adventure.</p>
       <Link to="/home" className="btn-primary">Go home</Link>
     </div>
   );

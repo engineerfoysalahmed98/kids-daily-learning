@@ -72,7 +72,7 @@ function ChildrenBody() {
 
       <Modal open={!!deleting} onClose={() => setDeleting(null)} title={`Delete ${deleting?.name}'s profile?`}>
         <div className="grid gap-4">
-          <p className="text-muted">This permanently removes {deleting?.name}'s XP, badges, streak and learning history. It can't be undone.</p>
+          <p className="text-muted">This permanently removes {deleting?.name}&apos;s XP, badges, streak and learning history. It can&apos;t be undone.</p>
           <Field label={`Type ${deleting?.name} to confirm`} htmlFor="del-confirm">
             <input id="del-confirm" className="field" value={confirmText} onChange={(e) => setConfirmText(e.target.value)} autoComplete="off" />
           </Field>
@@ -122,9 +122,9 @@ function SettingsBody() {
     <div className="grid gap-5">
       {child ? (
         <>
-          <ChildSwitcher children={fam.data.children} selected={child.id} onSelect={select} />
+          <ChildSwitcher profiles={fam.data.children} selected={child.id} onSelect={select} />
           <section className="card grid gap-2 p-5" aria-labelledby="learning">
-            <h2 id="learning" className="text-xl">{child.avatar} {child.name}'s learning</h2>
+            <h2 id="learning" className="text-xl">{child.avatar} {child.name}&apos;s learning</h2>
             <div className="flex min-h-[56px] items-center justify-between gap-4 py-2">
               <span><span className="block font-bold">Daily learning goal</span><span className="block text-sm font-semibold text-muted">Activities per day that complete the goal</span></span>
               <div className="flex items-center gap-2" role="group" aria-label="Daily goal">
@@ -134,7 +134,7 @@ function SettingsBody() {
               </div>
             </div>
             <div className="flex min-h-[56px] flex-wrap items-center justify-between gap-3 py-2">
-              <label htmlFor="screen-time"><span className="block font-bold">Screen-time limit</span><span className="block text-sm font-semibold text-muted">A friendly break screen appears when time's up</span></label>
+              <label htmlFor="screen-time"><span className="block font-bold">Screen-time limit</span><span className="block text-sm font-semibold text-muted">A friendly break screen appears when time&apos;s up</span></label>
               <select id="screen-time" className="field w-auto min-w-[9rem]" value={child.settings.screenTimeMinutes} onChange={(e) => save({ settings: { screenTimeMinutes: Number(e.target.value) } })}>
                 {SCREEN_OPTIONS.map((m) => <option key={m} value={m}>{m ? `${m} minutes` : "No limit"}</option>)}
               </select>
@@ -149,7 +149,7 @@ function SettingsBody() {
 
           <section className="card grid gap-1 p-5" aria-labelledby="subjects">
             <h2 id="subjects" className="text-xl">Allowed subjects</h2>
-            <p className="text-sm font-semibold text-muted">Switched-off subjects disappear from Today's Adventure, Learn and Games.</p>
+            <p className="text-sm font-semibold text-muted">Switched-off subjects disappear from Today&apos;s Adventure, Learn and Games.</p>
             <div className="grid gap-x-8 sm:grid-cols-2">
               {ALL_TRACKS.map((t) => (
                 <Toggle key={t} id={`track-${t}`} label={`${TRACK_META[t].icon} ${TRACK_META[t].label}`} checked={child.settings.allowedTracks.includes(t)} onChange={(v) => toggleTrack(t, v)} />

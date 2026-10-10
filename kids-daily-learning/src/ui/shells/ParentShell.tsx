@@ -34,7 +34,7 @@ export function ParentShell({ children, title, actions }: { children: ReactNode;
           <p className="text-muted">The device is in kid mode.</p>
           <div className="flex w-full gap-3">
             <button className="btn-secondary flex-1" onClick={() => nav.go("/home")}>Back to learning</button>
-            <button className="btn-primary flex-1" onClick={() => setGate(true)}>I'm a grown-up</button>
+            <button className="btn-primary flex-1" onClick={() => setGate(true)}>I&apos;m a grown-up</button>
           </div>
         </div>
         <ParentGate open={gate} onClose={() => setGate(false)} onPass={() => setGate(false)} />

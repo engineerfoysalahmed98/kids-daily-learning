@@ -14,7 +14,7 @@ import { ChildSwitcher, fmtDay, fmtMinutes, useFamily, useSelectedChild } from "
 
 export function RecentTable({ p, limit = 8 }: { p: ChildProgress; limit?: number }) {
   const rows = [...p.completions].reverse().slice(0, limit);
-  if (!rows.length) return <p className="px-5 pb-5 text-muted">No activities yet. They'll show up here as soon as {p.child.name} finishes one.</p>;
+  if (!rows.length) return <p className="px-5 pb-5 text-muted">No activities yet. They&apos;ll show up here as soon as {p.child.name} finishes one.</p>;
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[560px] text-left">
@@ -69,7 +69,7 @@ function Body() {
 
   return (
     <div className="grid gap-5">
-      <ChildSwitcher children={fam.data.children} selected={child.id} onSelect={select} />
+      <ChildSwitcher profiles={fam.data.children} selected={child.id} onSelect={select} />
 
       {/* Child overview */}
       <section className="card grid gap-5 p-5 md:grid-cols-[auto_1fr_auto] md:items-center" aria-labelledby="overview">
@@ -90,7 +90,7 @@ function Body() {
             <span className="text-sm font-extrabold tnum">{Math.min(s.todayDone, s.goal)}/{s.goal}</span>
           </Ring>
           <div className="text-sm font-bold leading-snug">
-            <p>Today's goal</p>
+            <p>Today&apos;s goal</p>
             <p className="text-muted tnum">{usedMin} / {child.settings.screenTimeMinutes || "∞"} min used</p>
           </div>
         </div>

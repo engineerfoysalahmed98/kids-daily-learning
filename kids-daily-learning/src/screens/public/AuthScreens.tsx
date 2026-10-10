@@ -66,7 +66,7 @@ export function SignUpScreen() {
         </Field>
         <label className="flex cursor-pointer items-start gap-3 font-semibold">
           <input id="su-agree" type="checkbox" className="mt-1 h-6 w-6 accent-[rgb(var(--math))]" checked={form.agree} onChange={(e) => setForm({ ...form, agree: e.target.checked })} />
-          <span>I'm a parent or legal guardian, and I've read the <Link to="/safety" className="underline">Privacy & Safety</Link> page.</span>
+          <span>I&apos;m a parent or legal guardian, and I&apos;ve read the <Link to="/safety" className="underline">Privacy & Safety</Link> page.</span>
         </label>
         {errors.agree && <p className="-mt-2 text-sm font-bold text-oops" role="alert">{errors.agree}</p>}
         {formError && <p className="rounded-2xl bg-oops/10 px-4 py-3 font-bold text-oops" role="alert">{formError}</p>}

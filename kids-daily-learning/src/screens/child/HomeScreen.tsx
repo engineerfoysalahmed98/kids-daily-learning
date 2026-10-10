@@ -35,7 +35,7 @@ function HomeBody() {
             <span className="font-display text-lg font-semibold tnum">{Math.min(summary.todayDone, summary.goal)}/{summary.goal}</span>
           </Ring>
           <div className="leading-tight">
-            <p className="label">Today's goal</p>
+            <p className="label">Today&apos;s goal</p>
             <p className="font-display text-lg font-semibold">{goalMet ? "Goal complete! 🎯" : `${summary.goal - summary.todayDone} more to go`}</p>
           </div>
         </div>
@@ -51,7 +51,7 @@ function HomeBody() {
       <section aria-labelledby="adventure" className="grid gap-4">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
-            <h2 id="adventure" className="text-2xl sm:text-3xl">Today's Adventure</h2>
+            <h2 id="adventure" className="text-2xl sm:text-3xl">Today&apos;s Adventure</h2>
             <p className="font-bold text-muted">{doneCount === plan.length && plan.length ? "You finished them all! Amazing! 🌈" : `${doneCount} of ${plan.length} done`}</p>
           </div>
           {next && <Link to={activityHref(next)} className="btn-primary">Continue: {next.icon} {next.title}</Link>}
