@@ -43,6 +43,14 @@ export function LandingScreen() {
             <Link to={start} className="btn-primary px-7 text-xl">Start Learning</Link>
           </div>
           <p className="text-sm font-bold text-muted">No ads · No in-app purchases · Parents in control</p>
+          <Link to="/bangla-math" lang="bn" className="card flex items-center gap-4 border-gk/50 bg-gk/10 p-4 transition hover:-translate-y-0.5">
+            <span className="text-4xl" aria-hidden="true">🔢</span>
+            <span className="min-w-0">
+              <span className="block font-display text-xl font-semibold">বাংলা সংখ্যা ও গণিত — এখনই শুরু করো</span>
+              <span className="block text-sm font-bold text-muted">১–১০০, যোগ, বিয়োগ, গুণ, ভাগ · লগইন বা ইমেইল লাগবে না</span>
+            </span>
+            <span className="ml-auto text-2xl" aria-hidden="true">→</span>
+          </Link>
         </div>
 
         {/* Product preview: a real "Today's Adventure" */}

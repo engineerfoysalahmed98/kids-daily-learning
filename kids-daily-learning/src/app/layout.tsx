@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Fredoka, Nunito } from "next/font/google";
+import { Fredoka, Hind_Siliguri, Nunito } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
 const display = Fredoka({ subsets: ["latin"], weight: ["500", "600"], variable: "--font-display", display: "swap" });
 const body = Nunito({ subsets: ["latin"], weight: ["500", "600", "700", "800"], variable: "--font-body", display: "swap" });
+/** Bangla script. Listed after the Latin fonts in every stack, so Bangla glyphs use it automatically. */
+const bangla = Hind_Siliguri({ subsets: ["bengali"], weight: ["400", "500", "600", "700"], variable: "--font-bangla", display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "Kids Daily Learning — Learn. Play. Grow. Every Day.", template: "%s · Kids Daily Learning" },
@@ -21,7 +23,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable}`}>
+    <html lang="en" className={`${display.variable} ${body.variable} ${bangla.variable}`}>
       <body>
         <Providers>{children}</Providers>
       </body>

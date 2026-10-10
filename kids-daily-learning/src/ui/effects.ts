@@ -42,23 +42,46 @@ export function playSfx(kind: Sfx, enabled: boolean) {
 
 // ---------------------------------------------------------------- speech
 
-export function canSpeak(): boolean {
-  return typeof window !== "undefined" && "speechSynthesis" in window;
+export type SpeechLang = "en" | "bn";
+
+function voicesFor(lang: SpeechLang): SpeechSynthesisVoice[] {
+  try { return window.speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith(lang)); } catch { return []; }
 }
 
-function pickVoice(): SpeechSynthesisVoice | undefined {
-  const voices = window.speechSynthesis.getVoices().filter((v) => v.lang.startsWith("en"));
+/**
+ * English always works with the default voice. Bangla needs a Bangla voice on
+ * the device (common on Android; often missing on desktops) — when there isn't
+ * one we return false and the UI simply hides the 🔊 button. Audio is never required.
+ */
+export function canSpeak(lang: SpeechLang = "en"): boolean {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return false;
+  return lang === "en" ? true : voicesFor(lang).length > 0;
+}
+
+/** Voices load asynchronously in some browsers; re-check when they arrive. */
+export function onVoicesChanged(cb: () => void): () => void {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return () => {};
+  const synth = window.speechSynthesis;
+  synth.addEventListener?.("voiceschanged", cb);
+  return () => synth.removeEventListener?.("voiceschanged", cb);
+}
+
+function pickVoice(lang: SpeechLang): SpeechSynthesisVoice | undefined {
+  const voices = voicesFor(lang);
+  if (lang === "bn") return voices.find((v) => v.lang.toLowerCase() === "bn-bd") ?? voices[0];
   const prefer = ["Samantha", "Google US English", "Microsoft Aria", "Microsoft Jenny", "Karen", "Moira", "Tessa"];
   return voices.find((v) => prefer.some((p) => v.name.includes(p))) ?? voices[0];
 }
 
 /** Child-friendly voice: a little slower and brighter than default. */
-export function speak(text: string, opts: { onEnd?: () => void; onStart?: () => void } = {}): boolean {
-  if (!canSpeak()) return false;
+export function speak(text: string, opts: { onEnd?: () => void; onStart?: () => void; lang?: SpeechLang } = {}): boolean {
+  const lang = opts.lang ?? "en";
+  if (!canSpeak(lang)) return false;
   const u = new SpeechSynthesisUtterance(text.replace(/[\p{Extended_Pictographic}]/gu, ""));
-  u.rate = 0.9;
+  u.rate = lang === "bn" ? 0.85 : 0.9;
   u.pitch = 1.15;
-  const v = pickVoice();
+  if (lang === "bn") u.lang = "bn-BD";
+  const v = pickVoice(lang);
   if (v) u.voice = v;
   u.onstart = () => opts.onStart?.();
   u.onend = () => opts.onEnd?.();

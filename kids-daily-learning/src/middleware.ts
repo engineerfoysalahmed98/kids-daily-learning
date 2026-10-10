@@ -10,6 +10,12 @@ import { SESSION_COOKIE, verifySession } from "@/server/session";
  * Anything not listed as public needs a session (deny by default).
  */
 const PUBLIC_PAGES = ["/", "/login", "/signup", "/safety"];
+/**
+ * Learning sections open to everyone — no account, no email. These pages use
+ * only built-in content and save guest progress on the device (localStorage);
+ * they call no private API, so every /api route keeps its existing protection.
+ */
+const PUBLIC_PREFIXES = ["/bangla-math"];
 /** Child learning pages (and their sub-pages, e.g. /learn/math, /quiz/<id>). */
 const LEARNING_PAGES = ["/home", "/learn", "/lesson", "/quiz", "/read", "/stories", "/games", "/memory", "/create", "/habit", "/complete", "/rewards", "/badges", "/me", "/buddy"];
 const PUBLIC_API = ["/api/auth/login", "/api/auth/signup", "/api/auth/session", "/api/auth/logout"];
@@ -26,7 +32,7 @@ export async function middleware(req: NextRequest) {
   if (isApi && !["GET", "HEAD", "OPTIONS"].includes(req.method)) {
     const origin = req.headers.get("origin");
     if (!origin || new URL(origin).host !== req.nextUrl.host) {
-      return NextResponse.json({ error: "Cross-site request blocked." }, { status: 403 });
+      return withSecurityHeaders(NextResponse.json({ error: "Cross-site request blocked." }, { status: 403 }));
     }
   }
 
@@ -34,16 +40,16 @@ export async function middleware(req: NextRequest) {
 
   if (isApi) {
     const publicRead = req.method === "GET" && PUBLIC_READ_API.some((p) => under(pathname, p));
-    if (!session && !publicRead && !PUBLIC_API.some((p) => pathname.startsWith(p))) {
-      return NextResponse.json({ error: "Please log in to continue." }, { status: 401 });
+    if (!session && !publicRead && !PUBLIC_API.some((p) => under(pathname, p))) {
+      return withSecurityHeaders(NextResponse.json({ error: "Please log in to continue." }, { status: 401 }));
     }
-  } else if (!PUBLIC_PAGES.includes(pathname)) {
+  } else if (!isPublicPage(pathname)) {
     if (!session) {
       if (LEARNING_PAGES.some((p) => under(pathname, p))) return withSecurityHeaders(NextResponse.next());
       const url = req.nextUrl.clone();
       url.pathname = "/login";
       url.search = "";
-      return NextResponse.redirect(url);
+      return withSecurityHeaders(NextResponse.redirect(url));
     }
     if (session.mode === "child" && PARENT_ONLY.some((p) => under(pathname, p))) {
       // The ParentShell shows the grown-up gate; the page itself renders no parent data.
@@ -53,6 +59,12 @@ export async function middleware(req: NextRequest) {
     }
   }
   return withSecurityHeaders(NextResponse.next());
+}
+
+function isPublicPage(pathname: string) {
+  return PUBLIC_PAGES.includes(pathname)
+    || PUBLIC_PREFIXES.some((p) => under(pathname, p))
+    || LEARNING_PAGES.some((p) => under(pathname, p));
 }
 
 function withSecurityHeaders(res: NextResponse) {

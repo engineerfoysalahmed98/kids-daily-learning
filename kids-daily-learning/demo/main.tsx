@@ -22,6 +22,11 @@ import { ParentDashboardScreen } from "@/screens/parent/DashboardScreen";
 import { ProgressScreen } from "@/screens/parent/ProgressScreen";
 import { ChildrenScreen, ParentSettingsScreen } from "@/screens/parent/ManageScreens";
 import { AdminScreen } from "@/screens/admin/AdminScreen";
+import { BanglaHomeScreen } from "@/screens/bangla/HomeScreen";
+import { BnNumberGroupScreen, BnNumbersScreen } from "@/screens/bangla/NumbersScreens";
+import { BnLessonScreen } from "@/screens/bangla/LessonScreen";
+import { BnQuizScreen } from "@/screens/bangla/QuizScreen";
+import { BnProgressScreen } from "@/screens/bangla/ProgressScreen";
 
 const TABLE: [string, ComponentType][] = [
   [ROUTES.landing, LandingScreen], [ROUTES.signup, SignUpScreen], [ROUTES.login, LoginScreen], [ROUTES.safety, SafetyScreen],
@@ -31,6 +36,8 @@ const TABLE: [string, ComponentType][] = [
   [ROUTES.stories, StoriesScreen], [ROUTES.rewards, RewardsScreen], [ROUTES.badges, BadgesScreen], [ROUTES.me, MeScreen],
   [ROUTES.buddy, BuddyScreen], [ROUTES.parent, ParentDashboardScreen], [ROUTES.parentChildren, ChildrenScreen],
   [ROUTES.parentProgress, ProgressScreen], [ROUTES.parentSettings, ParentSettingsScreen], [ROUTES.admin, AdminScreen],
+  [ROUTES.bnHome, BanglaHomeScreen], [ROUTES.bnNumbers, BnNumbersScreen], [ROUTES.bnNumberGroup, BnNumberGroupScreen],
+  [ROUTES.bnLesson, BnLessonScreen], [ROUTES.bnQuiz, BnQuizScreen], [ROUTES.bnProgress, BnProgressScreen],
 ];
 
 /*
