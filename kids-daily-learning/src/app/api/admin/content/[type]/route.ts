@@ -12,14 +12,21 @@ const text = (max: number) => z.string().trim().min(1).max(max);
 const level = z.number().int().min(1).max(5);
 const age = z.number().int().min(4).max(12);
 const base = { id: text(160), prompt: text(300), explain: text(400), visual: z.string().max(60).optional(), speak: z.string().max(300).optional() };
+// z.discriminatedUnion only accepts plain z.object() options — a .refine() on an
+// option turns it into ZodEffects, which fails type-checking and throws when the
+// module loads. The cross-field check therefore runs on the whole union below.
 const QuestionSchema = z.discriminatedUnion("type", [
-  z.object({ ...base, type: z.literal("mc"), options: z.array(text(160)).min(2).max(4), answer: z.number().int().min(0).max(3) }).refine((q) => q.answer < q.options.length, "Answer index out of range"),
+  z.object({ ...base, type: z.literal("mc"), options: z.array(text(160)).min(2).max(4), answer: z.number().int().min(0).max(3) }),
   z.object({ ...base, type: z.literal("tf"), answer: z.boolean() }),
   z.object({ ...base, type: z.literal("image"), options: z.array(z.object({ emoji: text(16), label: text(40) })).min(2).max(4), answer: z.number().int().min(0).max(3) }),
   z.object({ ...base, type: z.literal("match"), pairs: z.array(z.tuple([text(80), text(120)])).min(2).max(5) }),
   z.object({ ...base, type: z.literal("type"), accept: z.array(text(60)).min(1).max(5), inputMode: z.enum(["numeric", "text"]), placeholder: z.string().max(40).optional() }),
   z.object({ ...base, type: z.literal("order"), items: z.array(text(80)).min(2).max(8), sentence: z.boolean().optional() }),
-]);
+]).superRefine((q, ctx) => {
+  if (q.type === "mc" && q.answer >= q.options.length) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Answer index out of range", path: ["answer"] });
+  }
+});
 const Card = z.object({ emoji: text(16), title: text(80), body: text(400), example: z.string().max(200).optional() });
 
 const SCHEMAS = {
