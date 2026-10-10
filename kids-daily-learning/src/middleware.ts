@@ -8,6 +8,13 @@ import { SESSION_COOKIE, verifySession } from "@/server/session";
  *  3. Security headers on every response.
  */
 const PUBLIC_PAGES = ["/", "/login", "/signup", "/safety"];
+/**
+ * Learning sections open to everyone — no account, no email. These pages use
+ * only built-in content and save guest progress on the device (localStorage);
+ * they call no private API, so every /api route keeps its existing protection.
+ */
+const PUBLIC_PREFIXES = ["/bangla-math"];
+const isPublicPage = (p: string) => PUBLIC_PAGES.includes(p) || PUBLIC_PREFIXES.some((x) => p === x || p.startsWith(`${x}/`));
 const PUBLIC_API = ["/api/auth/login", "/api/auth/signup", "/api/auth/session", "/api/auth/logout"];
 const PARENT_ONLY = ["/parent", "/admin"];
 
@@ -28,7 +35,7 @@ export async function middleware(req: NextRequest) {
     if (!session && !PUBLIC_API.some((p) => pathname.startsWith(p))) {
       return NextResponse.json({ error: "Please log in to continue." }, { status: 401 });
     }
-  } else if (!PUBLIC_PAGES.includes(pathname)) {
+  } else if (!isPublicPage(pathname)) {
     if (!session) {
       const url = req.nextUrl.clone();
       url.pathname = "/login";

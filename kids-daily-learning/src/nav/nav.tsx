@@ -64,6 +64,12 @@ export const ROUTES = {
   parentProgress: "/parent/progress",
   parentSettings: "/parent/settings",
   admin: "/admin",
+  bnHome: "/bangla-math",
+  bnNumbers: "/bangla-math/numbers",
+  bnNumberGroup: "/bangla-math/numbers/:group",
+  bnLesson: "/bangla-math/learn/:op",
+  bnQuiz: "/bangla-math/quiz/:id",
+  bnProgress: "/bangla-math/progress",
 } as const;
 
 export function matchRoute(pattern: string, path: string): Record<string, string> | null {

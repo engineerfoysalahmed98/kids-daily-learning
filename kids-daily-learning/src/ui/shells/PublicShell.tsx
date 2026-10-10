@@ -13,6 +13,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
       <header className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4">
         <Link to="/" aria-label="Kids Daily Learning home"><Logo /></Link>
         <nav aria-label="Site" className="ml-auto flex items-center gap-1 sm:gap-2">
+          <Link to="/bangla-math" lang="bn" className="inline-flex min-h-[44px] items-center rounded-xl px-2 font-bold text-ink hover:bg-sunken sm:px-3">🔢 বাংলা গণিত</Link>
           <Link to="/safety" className="hidden min-h-[44px] items-center rounded-xl px-3 font-bold text-muted hover:text-ink sm:inline-flex">Safety</Link>
           {loggedIn
             ? <Link to="/parent" className="btn-secondary btn-sm">Parent area</Link>

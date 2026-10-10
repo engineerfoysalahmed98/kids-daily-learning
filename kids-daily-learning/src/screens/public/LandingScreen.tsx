@@ -43,6 +43,14 @@ export function LandingScreen() {
             <Link to={session?.parent ? "/parent" : "/login"} className="btn-secondary px-7 text-xl">Parent Dashboard</Link>
           </div>
           <p className="text-sm font-bold text-muted">No ads · No in-app purchases · Parents in control</p>
+          <Link to="/bangla-math" lang="bn" className="card flex items-center gap-4 border-gk/50 bg-gk/10 p-4 transition hover:-translate-y-0.5">
+            <span className="text-4xl" aria-hidden="true">🔢</span>
+            <span className="min-w-0">
+              <span className="block font-display text-xl font-semibold">বাংলা সংখ্যা ও গণিত — এখনই শুরু করো</span>
+              <span className="block text-sm font-bold text-muted">১–১০০, যোগ, বিয়োগ, গুণ, ভাগ · লগইন বা ইমেইল লাগবে না</span>
+            </span>
+            <span className="ml-auto text-2xl" aria-hidden="true">→</span>
+          </Link>
         </div>
 
         {/* Product preview: a real "Today's Adventure" */}
@@ -52,7 +60,7 @@ export function LandingScreen() {
               <span className="grid h-12 w-12 place-items-center rounded-2xl bg-sun/30 text-3xl">🦁</span>
               <div>
                 <p className="font-display text-xl font-semibold">Hi, Ayaan! 👋</p>
-                <p className="text-sm font-bold text-muted">You're on a 7-day learning streak! 🚀</p>
+                <p className="text-sm font-bold text-muted">You&apos;re on a 7-day learning streak! 🚀</p>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center">
@@ -60,7 +68,7 @@ export function LandingScreen() {
               <div className="rounded-2xl bg-flame/15 py-2"><p className="font-display text-lg font-semibold">🔥 7</p><p className="text-xs font-bold text-muted">Streak</p></div>
               <div className="rounded-2xl bg-story/15 py-2"><p className="font-display text-lg font-semibold">🏆 9</p><p className="text-xs font-bold text-muted">Badges</p></div>
             </div>
-            <p className="label mt-1">Today's Adventure</p>
+            <p className="label mt-1">Today&apos;s Adventure</p>
             {SAMPLE.slice(0, 4).map((a, i) => (
               <div key={a.title} className="flex items-center gap-3 rounded-2xl border-2 border-line p-2.5">
                 <Blob tone={a.tone} emoji={a.icon} size="sm" />
@@ -71,7 +79,7 @@ export function LandingScreen() {
           </div>
           <div className="absolute -bottom-6 -left-4 flex items-center gap-2 rounded-2xl border-2 border-line bg-surface p-2 pr-4 shadow-soft sm:-left-10" aria-hidden="true">
             <BuddyBot size={46} mood="wave" />
-            <p className="max-w-[11rem] text-sm font-bold">5 + 3? Let's count together! 5… 6… 7… 8! 🎉</p>
+            <p className="max-w-[11rem] text-sm font-bold">5 + 3? Let&apos;s count together! 5… 6… 7… 8! 🎉</p>
           </div>
         </div>
       </section>
@@ -150,7 +158,7 @@ export function LandingScreen() {
         <div className="grid gap-6 rounded-[2rem] bg-gk/10 p-6 sm:p-10 lg:grid-cols-[1fr_1.2fr]">
           <div className="grid content-start gap-3">
             <h2 id="safety" className="text-3xl sm:text-4xl">Built safe from the start</h2>
-            <p className="text-lg text-muted">We designed Kids Daily Learning the way we'd want it for our own children.</p>
+            <p className="text-lg text-muted">We designed Kids Daily Learning the way we&apos;d want it for our own children.</p>
             <Link to="/safety" className="btn-secondary w-fit">Read our safety promise</Link>
           </div>
           <ul className="grid gap-3 sm:grid-cols-2">
@@ -180,7 +188,7 @@ export function LandingScreen() {
           ))}
         </div>
         <div className="mt-10 grid place-items-center gap-3 text-center">
-          <p className="font-display text-2xl font-semibold">Ready for today's adventure?</p>
+          <p className="font-display text-2xl font-semibold">Ready for today&apos;s adventure?</p>
           <Link to={start} className="btn-primary px-8 text-xl">Start Learning</Link>
         </div>
       </section>

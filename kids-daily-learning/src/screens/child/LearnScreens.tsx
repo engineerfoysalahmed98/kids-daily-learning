@@ -25,6 +25,14 @@ function LearnBody() {
         <h1 className="text-3xl sm:text-4xl">Learn 📚</h1>
         <p className="font-bold text-muted">Pick a subject to practise anything you like.</p>
       </div>
+      <Link to="/bangla-math" lang="bn" className="card flex items-center gap-4 border-gk/50 bg-gk/10 p-4 transition hover:-translate-y-0.5">
+        <Blob tone="gk" emoji="🔢" />
+        <span className="min-w-0">
+          <span className="block font-display text-xl font-semibold">বাংলা সংখ্যা ও গণিত</span>
+          <span className="block text-sm font-bold text-muted">১–১০০ · যোগ · বিয়োগ · গুণ · ভাগ — বাংলায়</span>
+        </span>
+        <span className="ml-auto text-2xl" aria-hidden="true">→</span>
+      </Link>
       {subjects.length === 0 ? <EmptyState title="No subjects switched on" body="Ask a grown-up to turn subjects on in Parent Settings." /> : (
         <div className="grid gap-4 sm:grid-cols-2">
           {subjects.map((s) => {

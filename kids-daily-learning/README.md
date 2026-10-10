@@ -101,6 +101,28 @@ Quiz question types: multiple choice, true/false, picture choice (image-based), 
 
 ---
 
+## বাংলা সংখ্যা ও গণিত (Bangla numbers & math) — `/bangla-math`
+
+Open to everyone: **no login, no email**. Bangla is the default language in this section; English numerals and names are shown alongside.
+
+| Route | What it does |
+|---|---|
+| `/bangla-math` | Hub: age-group picker (৩–৪ / ৫–৬ / ৭–৮, changeable any time) and topics ordered for that age |
+| `/bangla-math/numbers` | ১–১০০ in ten groups of ten + a tappable শতক বোর্ড (hundred chart) |
+| `/bangla-math/numbers/[1-10]` | Each number: Bangla numeral, English numeral, Bangla & English names, place value, tap-to-count (≤ ২০), read-aloud |
+| `/bangla-math/learn/[add\|sub\|mul\|div]` | যোগ / বিয়োগ / গুণ / ভাগ explained in simple Bangla with pictures (আম, কলা, ফুল, খেলনা…), "নিজে করে দেখো" builder, নামতা ২–১০ |
+| `/bangla-math/quiz/[id]` | Short Bangla quizzes (`numbers-1..3`, `numbers-g1..g10`, `add-1..3`, …) using the shared `QuizRunner` |
+| `/bangla-math/progress` | Stars, badges, best score per level, sound toggle |
+
+- **Code:** content and generators in `src/core/bangla/` (pure, unit-tested); screens in `src/screens/bangla/`; guest storage in `src/state/bnGuestStore.ts`.
+- **Correctness:** every math question id encodes its problem (`bnm.add.2.3.res`); `tests/bangla.test.ts` regenerates thousands of quizzes and recomputes every answer independently. Division is always exact; subtraction never goes below zero.
+- **Stars:** one ⭐ per correct answer, once per distinct problem (re-submitting or replaying never pays twice). Badges for passing each level (≥ 60%), exploring all of ১–১০০ and reading all four lessons.
+- **Guest progress** is stored in `localStorage` on the device only (`kdl-bangla-math-v1`); the page tells children/parents it can be lost if browser data is cleared. No database tables or environment variables were added.
+- **Audio:** the 🔊 button uses the device's Bangla text-to-speech voice when one exists and is hidden otherwise — nothing depends on audio.
+- **Font:** Hind Siliguri via `next/font` (`--font-bangla`), placed after the Latin fonts so Bangla glyphs pick it up everywhere.
+
+---
+
 ## Security & privacy
 
 | Requirement | Implementation |

@@ -4,16 +4,55 @@ import type { Activity, Response } from "@/core/types";
 import { checkAnswer, correctAnswerText } from "@/core/engine";
 import { ProgressBar, Modal } from "../primitives";
 import { QuestionView } from "./QuestionView";
-import { playSfx } from "../effects";
+import { playSfx, type SpeechLang } from "../effects";
 
-const PRAISE = ["Great job! 🎉", "Great job! 🎉", "You got it! ⭐", "Brilliant! 🌟", "Super smart! 🧠"];
+const BN_DIGITS = "০১২৩৪৫৬৭৮৯";
+const bnNum = (n: number) => String(n).replace(/[0-9]/g, (d) => BN_DIGITS[Number(d)]);
+
+/** All quiz chrome text. English is the default; Bangla is used by the Bangla sections. */
+const TEXT = {
+  en: {
+    praise: ["Great job! 🎉", "Great job! 🎉", "You got it! ⭐", "Brilliant! 🌟", "Super smart! 🧠"],
+    almost: "Almost! Let's learn this together.",
+    answerIs: "The answer is:",
+    leave: "Leave quiz",
+    progress: (i: number, n: number) => `Question ${i} of ${n}`,
+    soFar: (c: number) => `${c} correct so far`,
+    count: (c: number) => String(c),
+    next: "Next question →",
+    finish: "See my stars ⭐",
+    saving: "Saving…",
+    breakTitle: "Take a break?",
+    breakBody: "Your answers for this quiz won't be saved, but you can start again any time.",
+    leaveBtn: "Leave",
+    keepGoing: "Keep going",
+  },
+  bn: {
+    praise: ["দারুণ করেছ! 🎉", "চমৎকার! ⭐", "খুব ভালো! 🌟", "সাবাশ! 🧠", "একদম ঠিক! 🎉"],
+    almost: "আবার চেষ্টা করো! চলো একসাথে শিখে নিই। 💡",
+    answerIs: "সঠিক উত্তর:",
+    leave: "খেলা থেকে বের হও",
+    progress: (i: number, n: number) => `প্রশ্ন ${bnNum(i)} / ${bnNum(n)}`,
+    soFar: (c: number) => `এ পর্যন্ত ${bnNum(c)}টি সঠিক`,
+    count: (c: number) => bnNum(c),
+    next: "পরের প্রশ্ন →",
+    finish: "আমার তারা দেখো ⭐",
+    saving: "সেভ হচ্ছে…",
+    breakTitle: "একটু বিরতি নেবে?",
+    breakBody: "এই খেলার উত্তরগুলো সেভ হবে না, তবে যেকোনো সময় আবার শুরু করতে পারবে।",
+    leaveBtn: "বের হও",
+    keepGoing: "খেলা চালিয়ে যাও",
+  },
+} as const;
 
 /**
  * Runs a quiz one question at a time with instant, kind feedback.
  * Never shames: wrong answers get "Almost! Let's learn this together."
  */
-export function QuizRunner({ activity, soundOn, onFinish, onExit, submitting }: {
+export function QuizRunner({ activity, soundOn, onFinish, onExit, submitting, lang = "en" }: {
   activity: Activity;
+  /** UI language for the quiz chrome and read-aloud (defaults to English). */
+  lang?: SpeechLang;
   soundOn: boolean;
   onFinish: (responses: Record<string, Response>, seconds: number) => void;
   onExit: () => void;
@@ -28,6 +67,7 @@ export function QuizRunner({ activity, soundOn, onFinish, onExit, submitting }: 
   const started = useRef(Date.now());
   const feedbackRef = useRef<HTMLDivElement>(null);
   const q = qs[index];
+  const t = TEXT[lang];
 
   useEffect(() => { if (answered) feedbackRef.current?.focus({ preventScroll: false }); }, [answered]);
 
@@ -57,14 +97,14 @@ export function QuizRunner({ activity, soundOn, onFinish, onExit, submitting }: 
   return (
     <div className="mx-auto grid max-w-2xl gap-5 pb-40">
       <div className="flex items-center gap-3">
-        <button type="button" onClick={() => setConfirmExit(true)} className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-sunken text-xl" aria-label="Leave quiz">✕</button>
-        <div className="flex-1"><ProgressBar value={index + (answered ? 1 : 0)} max={qs.length} label={`Question ${index + 1} of ${qs.length}`} tone="science" /></div>
-        <span className="chip tnum shrink-0 bg-sun/25" aria-label={`${correctCount} correct so far`}>⭐ {correctCount}</span>
+        <button type="button" onClick={() => setConfirmExit(true)} className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-sunken text-xl" aria-label={t.leave}>✕</button>
+        <div className="flex-1"><ProgressBar value={index + (answered ? 1 : 0)} max={qs.length} label={t.progress(index + 1, qs.length)} tone="science" /></div>
+        <span className="chip tnum shrink-0 bg-sun/25" aria-label={t.soFar(correctCount)}>⭐ {t.count(correctCount)}</span>
       </div>
-      <p className="label">{activity.icon} {activity.title} · Question {index + 1} of {qs.length}</p>
+      <p className="label">{activity.icon} {activity.title} · {t.progress(index + 1, qs.length)}</p>
 
       <div className="card p-5 sm:p-7" key={q.id}>
-        <QuestionView q={q} answered={answered} onAnswer={answer} />
+        <QuestionView q={q} answered={answered} onAnswer={answer} lang={lang} />
       </div>
 
       {answered && (
@@ -75,24 +115,24 @@ export function QuizRunner({ activity, soundOn, onFinish, onExit, submitting }: 
               <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-2xl ${answered.correct ? "bg-good/15" : "bg-oops/15"}`} aria-hidden="true">{answered.correct ? "🎉" : "💡"}</span>
               <div className="min-w-0 flex-1">
                 <p className={`font-display text-xl font-semibold ${answered.correct ? "text-good" : "text-oops"}`}>
-                  {answered.correct ? PRAISE[index % PRAISE.length] : "Almost! Let's learn this together."}
+                  {answered.correct ? t.praise[index % t.praise.length] : t.almost}
                 </p>
-                {!answered.correct && <p className="mt-1 font-bold">The answer is: <span className="text-ink">{correctAnswerText(q)}</span></p>}
+                {!answered.correct && <p className="mt-1 font-bold">{t.answerIs} <span className="text-ink">{correctAnswerText(q)}</span></p>}
                 <p className="mt-1 text-muted">{q.explain}</p>
               </div>
             </div>
             <button type="button" className="btn-primary mt-4 w-full" onClick={next} disabled={submitting}>
-              {isLast ? (submitting ? "Saving…" : "See my stars ⭐") : "Next question →"}
+              {isLast ? (submitting ? t.saving : t.finish) : t.next}
             </button>
           </div>
         </div>
       )}
 
-      <Modal open={confirmExit} onClose={() => setConfirmExit(false)} title="Take a break?">
-        <p className="text-muted">Your answers for this quiz won't be saved, but you can start again any time.</p>
+      <Modal open={confirmExit} onClose={() => setConfirmExit(false)} title={t.breakTitle}>
+        <p className="text-muted">{t.breakBody}</p>
         <div className="mt-5 flex gap-3">
-          <button className="btn-secondary flex-1" onClick={onExit}>Leave</button>
-          <button className="btn-primary flex-1" onClick={() => setConfirmExit(false)}>Keep going</button>
+          <button className="btn-secondary flex-1" onClick={onExit}>{t.leaveBtn}</button>
+          <button className="btn-primary flex-1" onClick={() => setConfirmExit(false)}>{t.keepGoing}</button>
         </div>
       </Modal>
     </div>

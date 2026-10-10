@@ -2,30 +2,41 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { MatchQuestion, OrderQuestion, Question, Response } from "@/core/types";
 import { createRng } from "@/core/engine";
-import { canSpeak, speak, stopSpeaking } from "../effects";
+import { canSpeak, onVoicesChanged, speak, stopSpeaking, type SpeechLang } from "../effects";
 
 export interface QuestionViewProps {
   q: Question;
   /** Set once the child has answered: locks input and shows right/wrong styling. */
   answered: { response: Response; correct: boolean } | null;
   onAnswer: (r: Response) => void;
+  /** UI language for labels and read-aloud. Defaults to English. */
+  lang?: SpeechLang;
 }
+
+const QV_TEXT = {
+  en: { letters: "ABCD", correct: "correct answer", readQ: "Read the question aloud", trueL: "True", falseL: "False", yourAnswer: "Your answer", typeHere: "Type your answer", check: "Check" },
+  bn: { letters: "কখগঘ", correct: "সঠিক উত্তর", readQ: "প্রশ্নটি পড়ে শোনাও", trueL: "ঠিক", falseL: "ভুল", yourAnswer: "তোমার উত্তর", typeHere: "উত্তর লেখো", check: "মিলিয়ে দেখো" },
+} as const;
 
 const MATCH_COLORS = ["bg-math/25 border-math", "bg-english/25 border-english", "bg-science/25 border-science", "bg-story/25 border-story", "bg-creativity/25 border-creativity"];
 
-export function SpeakButton({ text, label = "Read aloud" }: { text: string; label?: string }) {
+export function SpeakButton({ text, label = "Read aloud", lang = "en" }: { text: string; label?: string; lang?: SpeechLang }) {
   const [on, setOn] = useState(false);
-  useEffect(() => () => stopSpeaking(), []);
-  if (!canSpeak()) return null;
+  // Render only after mount (no server/client mismatch) and re-check when voices load.
+  const [, setVoicesTick] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); const off = onVoicesChanged(() => setVoicesTick((t) => t + 1)); return () => { off(); stopSpeaking(); }; }, []);
+  if (!mounted || !canSpeak(lang)) return null;
   return (
     <button type="button" className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-sunken text-xl" aria-label={label} aria-pressed={on}
-      onClick={() => { if (on) { stopSpeaking(); setOn(false); return; } stopSpeaking(); speak(text, { onStart: () => setOn(true), onEnd: () => setOn(false) }); }}>
+      onClick={() => { if (on) { stopSpeaking(); setOn(false); return; } stopSpeaking(); speak(text, { lang, onStart: () => setOn(true), onEnd: () => setOn(false) }); }}>
       <span aria-hidden="true">{on ? "⏹️" : "🔊"}</span>
     </button>
   );
 }
 
-export function QuestionView({ q, answered, onAnswer }: QuestionViewProps) {
+export function QuestionView({ q, answered, onAnswer, lang = "en" }: QuestionViewProps) {
+  const t = QV_TEXT[lang];
   return (
     <div className="grid gap-5">
       {q.visual && (
@@ -35,12 +46,12 @@ export function QuestionView({ q, answered, onAnswer }: QuestionViewProps) {
       )}
       <div className="flex items-start gap-3">
         <h2 className="flex-1 text-2xl leading-snug" id={`q-${q.id}`}>{q.prompt}</h2>
-        <SpeakButton text={q.speak ?? q.prompt} label="Read the question aloud" />
+        <SpeakButton text={q.speak ?? q.prompt} label={t.readQ} lang={lang} />
       </div>
-      {q.type === "mc" && <ChoiceList options={q.options} answer={q.answer} answered={answered} onPick={(i) => onAnswer({ type: "mc", choice: i })} labelledBy={`q-${q.id}`} />}
+      {q.type === "mc" && <ChoiceList options={q.options} answer={q.answer} answered={answered} onPick={(i) => onAnswer({ type: "mc", choice: i })} labelledBy={`q-${q.id}`} t={t} />}
       {q.type === "image" && <PictureChoice q={q} answered={answered} onPick={(i) => onAnswer({ type: "image", choice: i })} />}
-      {q.type === "tf" && <TrueFalse answer={q.answer} answered={answered} onPick={(v) => onAnswer({ type: "tf", value: v })} />}
-      {q.type === "type" && <TypeAnswer key={q.id} q={q} answered={answered} onSubmit={(text) => onAnswer({ type: "type", text })} />}
+      {q.type === "tf" && <TrueFalse answer={q.answer} answered={answered} onPick={(v) => onAnswer({ type: "tf", value: v })} t={t} />}
+      {q.type === "type" && <TypeAnswer key={q.id} q={q} answered={answered} onSubmit={(text) => onAnswer({ type: "type", text })} t={t} />}
       {q.type === "order" && <OrderAnswer key={q.id} q={q} answered={answered} onSubmit={(items) => onAnswer({ type: "order", items })} />}
       {q.type === "match" && <MatchAnswer key={q.id} q={q} answered={answered} onSubmit={(pairs) => onAnswer({ type: "match", pairs })} />}
     </div>
@@ -54,16 +65,18 @@ function stateClass(isPicked: boolean, isRight: boolean, locked: boolean): strin
   return "border-line bg-surface opacity-60";
 }
 
-function ChoiceList({ options, answer, answered, onPick, labelledBy }: { options: string[]; answer: number; answered: QuestionViewProps["answered"]; onPick: (i: number) => void; labelledBy: string }) {
+type QvText = (typeof QV_TEXT)[keyof typeof QV_TEXT];
+
+function ChoiceList({ options, answer, answered, onPick, labelledBy, t = QV_TEXT.en }: { options: string[]; answer: number; answered: QuestionViewProps["answered"]; onPick: (i: number) => void; labelledBy: string; t?: QvText }) {
   const picked = answered?.response.type === "mc" ? answered.response.choice : null;
   return (
     <div role="group" aria-labelledby={labelledBy} className="grid gap-3">
       {options.map((o, i) => (
         <button key={i} type="button" disabled={!!answered} onClick={() => onPick(i)}
           className={`flex min-h-[60px] items-center gap-3 rounded-2xl border-[3px] px-4 py-3 text-left text-lg font-bold transition ${stateClass(picked === i, i === answer, !!answered)}`}>
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-sunken font-display text-base" aria-hidden="true">{"ABCD"[i]}</span>
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-sunken font-display text-base" aria-hidden="true">{t.letters[i]}</span>
           <span className="flex-1">{o}</span>
-          {answered && i === answer && <span aria-label="correct answer">✅</span>}
+          {answered && i === answer && <span aria-label={t.correct}>✅</span>}
         </button>
       ))}
     </div>
@@ -86,7 +99,7 @@ function PictureChoice({ q, answered, onPick }: { q: Extract<Question, { type: "
   );
 }
 
-function TrueFalse({ answer, answered, onPick }: { answer: boolean; answered: QuestionViewProps["answered"]; onPick: (v: boolean) => void }) {
+function TrueFalse({ answer, answered, onPick, t = QV_TEXT.en }: { answer: boolean; answered: QuestionViewProps["answered"]; onPick: (v: boolean) => void; t?: QvText }) {
   const picked = answered?.response.type === "tf" ? answered.response.value : null;
   return (
     <div className="grid grid-cols-2 gap-3">
@@ -94,25 +107,25 @@ function TrueFalse({ answer, answered, onPick }: { answer: boolean; answered: Qu
         <button key={String(v)} type="button" disabled={!!answered} onClick={() => onPick(v)}
           className={`grid min-h-[110px] place-items-center gap-1 rounded-3xl border-[3px] text-xl font-extrabold transition ${stateClass(picked === v, v === answer, !!answered)}`}>
           <span className="text-4xl" aria-hidden="true">{v ? "👍" : "👎"}</span>
-          {v ? "True" : "False"}
+          {v ? t.trueL : t.falseL}
         </button>
       ))}
     </div>
   );
 }
 
-function TypeAnswer({ q, answered, onSubmit }: { q: Extract<Question, { type: "type" }>; answered: QuestionViewProps["answered"]; onSubmit: (t: string) => void }) {
+function TypeAnswer({ q, answered, onSubmit, t = QV_TEXT.en }: { q: Extract<Question, { type: "type" }>; answered: QuestionViewProps["answered"]; onSubmit: (t: string) => void; t?: QvText }) {
   const [text, setText] = useState("");
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => { ref.current?.focus({ preventScroll: true }); }, []);
   return (
     <form className="grid gap-3" onSubmit={(e) => { e.preventDefault(); if (text.trim()) onSubmit(text); }}>
-      <label htmlFor={`type-${q.id}`} className="sr-only">Your answer</label>
+      <label htmlFor={`type-${q.id}`} className="sr-only">{t.yourAnswer}</label>
       <input ref={ref} id={`type-${q.id}`} value={text} onChange={(e) => setText(e.target.value)} disabled={!!answered}
         inputMode={q.inputMode === "numeric" ? "numeric" : "text"} autoComplete="off" autoCapitalize="off" spellCheck={false} maxLength={40}
-        placeholder={q.placeholder ?? "Type your answer"}
+        placeholder={q.placeholder ?? t.typeHere}
         className={`field min-h-[64px] text-center font-display text-3xl ${answered ? (answered.correct ? "border-good bg-good/10" : "border-oops bg-oops/10") : ""}`} />
-      {!answered && <button type="submit" className="btn-primary w-full" disabled={!text.trim()}>Check</button>}
+      {!answered && <button type="submit" className="btn-primary w-full" disabled={!text.trim()}>{t.check}</button>}
     </form>
   );
 }
