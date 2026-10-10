@@ -6,6 +6,8 @@ import { Link, useNav } from "@/nav/nav";
 import { LogoMark, BuddyBot } from "../brand";
 import { Spinner, ErrorState } from "../primitives";
 import { ParentGate } from "../ParentGate";
+import { GuestSetup } from "../GuestSetup";
+import { isGuestSession } from "@/state/guestService";
 import { dayKey } from "@/core/engine";
 
 const NAV = [
@@ -38,11 +40,9 @@ export function ChildShell({ children, focus = false }: { children: ReactNode; f
   const [gate, setGate] = useState(false);
   const child = data.progress?.child;
 
-  // Guard: need a logged-in parent and a selected child.
+  // A logged-in parent must pick a child first. Logged-out visitors learn as a guest (no login wall).
   useEffect(() => {
-    if (!session) return;
-    if (!session.parent) nav.go("/login", { replace: true });
-    else if (!session.activeChildId) nav.go("/profiles", { replace: true });
+    if (session?.parent && !session.activeChildId) nav.go("/profiles", { replace: true });
   }, [session, nav]);
 
   // Apply child accessibility settings to the document.
@@ -74,6 +74,7 @@ export function ChildShell({ children, focus = false }: { children: ReactNode; f
     return () => clearInterval(t);
   }, [data.childId, service]);
 
+  if (session && !session.parent && !session.activeChildId) return <GuestSetup />;
   if (!session || (data.loading && !data.progress)) return <div className="min-h-dvh bg-bg"><Spinner label="Getting your adventure ready" /></div>;
   if (data.error && !data.progress) return <div className="mx-auto max-w-md px-4 py-10"><ErrorState error={data.error} onRetry={data.reload} /></div>;
   if (!child || !data.summary) return <Spinner />;
@@ -104,7 +105,9 @@ export function ChildShell({ children, focus = false }: { children: ReactNode; f
               <BuddyBot size={40} /> Ask Buddy
             </Link>
           )}
-          <button className="mt-auto text-left text-sm font-bold text-muted underline-offset-4 hover:underline" onClick={() => setGate(true)}>🔒 Grown-ups</button>
+          {!isGuestSession(session) && (
+            <button className="mt-auto text-left text-sm font-bold text-muted underline-offset-4 hover:underline" onClick={() => setGate(true)}>🔒 Grown-ups</button>
+          )}
         </aside>
 
         <div className="min-w-0">

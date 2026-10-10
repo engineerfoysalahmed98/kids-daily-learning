@@ -13,9 +13,10 @@ function greeting(): string {
 }
 
 function HomeBody() {
-  const { progress, plan, summary, today } = useChildData();
+  const { progress, content, plan, summary, today } = useChildData();
   const { aiEnabled } = useChildPrefs();
-  if (!progress || !summary) return <div className="grid gap-4"><Skeleton className="h-32" /><Skeleton className="h-48" /></div>;
+  // Wait for the curriculum too, so an empty plan is never shown as "no activities".
+  if (!progress || !summary || !content) return <div className="grid gap-4"><Skeleton className="h-32" /><Skeleton className="h-48" /></div>;
   const child = progress.child;
   const doneToday = new Map(progress.completions.filter((c) => c.day === today).map((c) => [c.activityId, c]));
   const doneCount = plan.filter((a) => doneToday.has(a.id)).length;

@@ -21,6 +21,7 @@ function AuthFrame({ title, sub, children, footer }: { title: string; sub: strin
           {children}
         </div>
         <div className="text-center font-bold text-muted">{footer}</div>
+        <p className="text-center text-sm font-bold text-muted">Parent accounts are optional. Just here to learn? <Link to="/home" className="text-ink underline underline-offset-4">Start learning, no account needed</Link></p>
       </div>
     </div>
   );

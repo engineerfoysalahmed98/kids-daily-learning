@@ -12,12 +12,32 @@
 ```bash
 cp .env.example .env              # set DATABASE_URL and AUTH_SECRET
 npm install
-npm run db:push                   # create tables
+npm run db:deploy                 # create tables (applies prisma/migrations)
 npm run db:seed:demo              # curriculum + demo family (dev only)
 npm run dev                       # http://localhost:3000
 ```
 
 Demo login: **demo@kidsdaily.app / learn2day**. The demo parent is also a content admin.
+
+**No account needed to learn.** Visitors tap *Start Learning*, pick a nickname, age and avatar, and use lessons, quizzes, stories, games, rewards and their profile straight away. Guest progress is kept on that device only (`src/state/guestService.ts`) and never sent to the database; Buddy (AI) stays off until a grown-up creates a parent account. Parent accounts add synced progress, multiple children, goals, screen-time limits and the dashboard. Parent pages (`/parent`, `/profiles`) and content admin (`/admin`) still require a login, and admin also requires the ADMIN role.
+
+### Deploying to Vercel
+
+Set these Environment Variables (Production, and Preview if used) before deploying:
+
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string (Neon, Supabase, Vercel Postgres…). On Supabase use the **session** pooler (port 5432), or add `?pgbouncer=true` to a transaction-pooler URL. |
+| `AUTH_SECRET` | 32+ random characters (`openssl rand -base64 48`). Changing it logs everyone out. |
+| `NEXT_PUBLIC_DATA_MODE` | `api` |
+
+The Vercel build (`npm run build`) never touches the database. Create the tables separately — once now, and again whenever `prisma/migrations` changes — by running this from your machine with the production connection string:
+
+```bash
+DATABASE_URL="<production url>" npm run db:deploy
+```
+
+`migrate deploy` only applies pending migrations; it never resets or deletes data. Then run `npm run db:seed` the same way to load the curriculum (until then the built-in curriculum is served). If the database already has tables from an earlier `db:push`, baseline it once with `npx prisma migrate resolve --applied 20261005000000_init` instead.
 
 No database yet? Run `npm run dev:mock` and the whole app runs on in-browser demo data. The same mock powers the single-file playable demo: run `npm run demo:build` to produce `demo/dist/kids-daily-learning-demo.html`.
 
@@ -146,7 +166,7 @@ Search the code for `▶ PRODUCTION`.
 
 | Area | Now | Production |
 |---|---|---|
-| Data | `ApiDataService` → API routes → Prisma | Set `DATABASE_URL`, run migrations and `db:seed` |
+| Data | `ApiDataService` → API routes → Prisma | Set `DATABASE_URL` + `AUTH_SECRET`; migrations run on deploy; `db:seed` once |
 | Buddy model | `BUDDY_PROVIDER=mock` | `BUDDY_PROVIDER=anthropic` + `ANTHROPIC_API_KEY` (`src/server/buddy.ts`) |
 | Rate-limit store | In-memory (single instance) | Redis/Upstash in `src/server/rateLimit.ts` |
 | Parent email/push | Dashboard feed | Enqueue delivery in `recordCompletion()` (`src/server/progressRepo.ts`) |
@@ -160,4 +180,4 @@ Search the code for `▶ PRODUCTION`.
 - ✅ Engine unit tests pass (12 tests, ~3,000 assertions), including the exact sample program for a 7-year-old.
 - ✅ All UI, state and engine code type-checks strictly against React 19 types.
 - ✅ End-to-end flow tested in Chromium on the playable demo: Parent signup → Create child → Child dashboard → Activity → Quiz → Score → XP → Badge → Streak → Parent progress; plus Buddy safety, parental gate, lessons, story, drawing, habit, admin.
-- ⚠️ `next build`, Prisma migrations and the API routes were **not executed** in the build environment (npm registry unavailable there). Server code was type-checked against stubs only. Run `npm install && npm run typecheck && npm run build` first.
+- ✅ `npm run build` passes; the initial migration applies cleanly with `prisma migrate deploy` and matches `schema.prisma` (no drift); signup → session → login verified against PostgreSQL.
