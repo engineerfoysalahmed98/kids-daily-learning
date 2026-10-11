@@ -18,6 +18,14 @@ export function HubHomeScreen() {
       <section aria-label="Learning folders" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {FOLDERS.map((f) => <FolderCard key={f.id} folder={f} />)}
       </section>
+      <Link to="/learn" className="card flex items-center gap-4 p-4 transition hover:-translate-y-0.5">
+        <Blob tone="sun" emoji="🧭" />
+        <span className="min-w-0 flex-1">
+          <span className="block font-display text-xl font-semibold">আরও বিষয় · More subjects</span>
+          <span className="block text-sm font-semibold text-muted" lang="en">English, Mathematics, Science, General Knowledge, Creativity and Good Habits</span>
+        </span>
+        <span className="text-2xl" aria-hidden="true">→</span>
+      </Link>
       <Link to={`${HUB}/progress`} className="btn-secondary w-full sm:w-fit">🏆 আমার অগ্রগতি · My progress</Link>
     </HubShell>
   );
