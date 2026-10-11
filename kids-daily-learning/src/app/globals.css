@@ -69,6 +69,9 @@
   :focus-visible { outline: 3px solid rgb(var(--math)); outline-offset: 3px; border-radius: 12px; }
   button, [role="button"], a { -webkit-tap-highlight-color: transparent; }
   .tnum { font-variant-numeric: tabular-nums; }
+  /* Bangla conjuncts and vowel signs need a little more vertical room. */
+  [lang="bn"] { line-height: 1.6; }
+  [lang="bn"] h1, [lang="bn"] h2, [lang="bn"] h3 { line-height: 1.35; letter-spacing: 0; }
 }
 
 @layer components {

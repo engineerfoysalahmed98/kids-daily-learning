@@ -3,7 +3,10 @@
  * Signed JWT (HS256, jose) in an httpOnly, Secure, SameSite=Lax cookie.
  * Contains ids and roles only — never child names or other personal data.
  */
-import { SignJWT, jwtVerify } from "jose";
+// Per-feature entry points: only the JWS sign/verify code is bundled, so the
+// Edge middleware no longer pulls in jose's unused JWE compression module.
+import { SignJWT } from "jose/jwt/sign";
+import { jwtVerify } from "jose/jwt/verify";
 
 export const SESSION_COOKIE = "kdl_session";
 export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 14; // 14 days

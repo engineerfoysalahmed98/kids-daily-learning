@@ -34,8 +34,10 @@ const config: Config = {
         habit: v("habit"),
       },
       fontFamily: {
-        display: ["var(--font-display)", "Fredoka", "ui-rounded", "system-ui", "sans-serif"],
-        body: ["var(--font-body)", "Nunito", "ui-rounded", "system-ui", "sans-serif"],
+        // Bangla glyphs fall through the Latin fonts to Hind Siliguri.
+        display: ["var(--font-display)", "Fredoka", "var(--font-bangla)", "Hind Siliguri", "Noto Sans Bengali", "ui-rounded", "system-ui", "sans-serif"],
+        body: ["var(--font-body)", "Nunito", "var(--font-bangla)", "Hind Siliguri", "Noto Sans Bengali", "ui-rounded", "system-ui", "sans-serif"],
+        bangla: ["var(--font-bangla)", "Hind Siliguri", "Noto Sans Bengali", "system-ui", "sans-serif"],
       },
       fontSize: {
         // kid-friendly scale: nothing interactive below 16px

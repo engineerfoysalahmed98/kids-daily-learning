@@ -121,6 +121,47 @@ Quiz question types: multiple choice, true/false, picture choice (image-based), 
 
 ---
 
+## বাংলা সংখ্যা ও গণিত (Bangla numbers & math) — `/bangla-math`
+
+Open to everyone: **no login, no email**. Bangla is the default language in this section; English numerals and names are shown alongside.
+
+| Route | What it does |
+|---|---|
+| `/bangla-math` | Hub: age-group picker (৩–৪ / ৫–৬ / ৭–৮, changeable any time) and topics ordered for that age |
+| `/bangla-math/numbers` | ১–১০০ in ten groups of ten + a tappable শতক বোর্ড (hundred chart) |
+| `/bangla-math/numbers/[1-10]` | Each number: Bangla numeral, English numeral, Bangla & English names, place value, tap-to-count (≤ ২০), read-aloud |
+| `/bangla-math/learn/[add\|sub\|mul\|div]` | যোগ / বিয়োগ / গুণ / ভাগ explained in simple Bangla with pictures (আম, কলা, ফুল, খেলনা…), "নিজে করে দেখো" builder, নামতা ২–১০ |
+| `/bangla-math/quiz/[id]` | Short Bangla quizzes (`numbers-1..3`, `numbers-g1..g10`, `add-1..3`, …) using the shared `QuizRunner` |
+| `/bangla-math/progress` | Stars, badges, best score per level, sound toggle |
+
+- **Code:** content and generators in `src/core/bangla/` (pure, unit-tested); screens in `src/screens/bangla/`; guest storage in `src/state/bnGuestStore.ts`.
+- **Correctness:** every math question id encodes its problem (`bnm.add.2.3.res`); `tests/bangla.test.ts` regenerates thousands of quizzes and recomputes every answer independently. Division is always exact; subtraction never goes below zero.
+- **Stars:** one ⭐ per correct answer, once per distinct problem (re-submitting or replaying never pays twice). Badges for passing each level (≥ 60%), exploring all of ১–১০০ and reading all four lessons.
+- **Guest progress** is stored in `localStorage` on the device only (`kdl-bangla-math-v1`); the page tells children/parents it can be lost if browser data is cleared. No database tables or environment variables were added.
+- **Audio:** the 🔊 button uses the device's Bangla text-to-speech voice when one exists and is hidden otherwise — nothing depends on audio.
+- **Font:** Hind Siliguri via `next/font` (`--font-bangla`), placed after the Latin fonts so Bangla glyphs pick it up everywhere.
+
+## শিখি · Learning Hub — `/shikhi`
+
+Open to everyone (guests included): **no login, no email**. Linked from the public header ("📚 শিখি / Learn") and from the child **Learn** tab.
+
+| Route | What it does |
+|---|---|
+| `/shikhi` | Five folder cards (বাংলা শিখি, English Learning, বাংলা গণিত, কবিতা ও ছড়া, গল্পের বই) with progress and "শুরু করি / Start Learning" |
+| `/shikhi/bangla/[shoroborno\|byanjonborno\|chena\|lekha\|shobdo\|bakko]` | 11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ letter cards (picture + word + sentence), flip cards, finger tracing, picture words, sentences |
+| `/shikhi/english/[abc\|case\|phonics\|words\|spelling\|reading]` | A–Z with Bangla meanings, upper/lowercase + tracing, phonics sounds, picture words, spelling, sentences |
+| `/shikhi/math`, `/shikhi/math/puzzles` | Folder page for the existing `/bangla-math` lessons and its picture quizzes (progress read from that section's store) |
+| `/shikhi/poems`, `/shikhi/poems/[id]` | 12 rhymes by age (৪–৬, ৭–৯, ১০–১২) with read-along line highlighting and questions |
+| `/shikhi/stories`, `/shikhi/stories/[id]` | Bangla and English stories filtered by language and age, read-along, moral, questions |
+| `/shikhi/quiz/[id]`, `/shikhi/progress` | Quizzes (shared `QuizRunner`) and a progress overview |
+
+- **Code:** content, quiz generators, catalog and progress rules in `src/core/hub/` (pure, tested in `tests/hub.test.ts`); screens in `src/screens/hub/`; `src/ui/TracingPad.tsx`, `src/ui/ReadAlong.tsx`; device storage in `src/state/hubStore.ts` (`kdl-learning-hub-v1`, separate from the math store — nothing existing is reset).
+- **Stars:** one ⭐ per correct quiz answer (once per question) and per first successful tracing of a letter. A quiz counts as done at ≥ 60%.
+- **Audio:** read-aloud uses the device's text-to-speech voice and the 🔊/▶️ buttons are hidden when no voice exists; line-by-line reading always works.
+- **Copyright:** poems are original or anonymous traditional লোকছড়া; Bangla stories are original except a retelling of Aesop's "The Crow and the Pitcher"; English stories are the app's existing originals. No database tables, migrations or environment variables were added.
+
+---
+
 ## Security & privacy
 
 | Requirement | Implementation |

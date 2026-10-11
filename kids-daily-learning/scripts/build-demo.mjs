@@ -47,8 +47,8 @@ const html = `<meta charset="utf-8">
 <meta name="description" content="Playable demo of Kids Daily Learning — daily lessons, quizzes, stories, games and good habits for ages 4–12.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;600;700;800&display=swap">
-<style>:root{--font-display:"Fredoka";--font-body:"Nunito"}${css}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+<style>:root{--font-display:"Fredoka";--font-body:"Nunito";--font-bangla:"Hind Siliguri"}${css}</style>
 <div id="root"></div>
 <noscript>Kids Daily Learning needs JavaScript to run.</noscript>
 <script>${js}</script>

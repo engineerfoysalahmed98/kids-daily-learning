@@ -69,7 +69,7 @@ function Body() {
 
   return (
     <div className="grid gap-5">
-      <ChildSwitcher kids={fam.data.children} selected={child.id} onSelect={select} />
+      <ChildSwitcher profiles={fam.data.children} selected={child.id} onSelect={select} />
 
       {/* Child overview */}
       <section className="card grid gap-5 p-5 md:grid-cols-[auto_1fr_auto] md:items-center" aria-labelledby="overview">

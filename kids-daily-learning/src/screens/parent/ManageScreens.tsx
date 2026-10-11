@@ -122,7 +122,7 @@ function SettingsBody() {
     <div className="grid gap-5">
       {child ? (
         <>
-          <ChildSwitcher kids={fam.data.children} selected={child.id} onSelect={select} />
+          <ChildSwitcher profiles={fam.data.children} selected={child.id} onSelect={select} />
           <section className="card grid gap-2 p-5" aria-labelledby="learning">
             <h2 id="learning" className="text-xl">{child.avatar} {child.name}&apos;s learning</h2>
             <div className="flex min-h-[56px] items-center justify-between gap-4 py-2">

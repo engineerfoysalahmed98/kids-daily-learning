@@ -22,6 +22,16 @@ import { ParentDashboardScreen } from "@/screens/parent/DashboardScreen";
 import { ProgressScreen } from "@/screens/parent/ProgressScreen";
 import { ChildrenScreen, ParentSettingsScreen } from "@/screens/parent/ManageScreens";
 import { AdminScreen } from "@/screens/admin/AdminScreen";
+import { BanglaHomeScreen } from "@/screens/bangla/HomeScreen";
+import { BnNumberGroupScreen, BnNumbersScreen } from "@/screens/bangla/NumbersScreens";
+import { BnLessonScreen } from "@/screens/bangla/LessonScreen";
+import { BnQuizScreen } from "@/screens/bangla/QuizScreen";
+import { BnProgressScreen } from "@/screens/bangla/ProgressScreen";
+import { BanglaFolderScreen, EnglishFolderScreen, HubHomeScreen, HubProgressScreen, MathFolderScreen, MathPuzzlesScreen } from "@/screens/hub/HubScreens";
+import { HubQuizScreen } from "@/screens/hub/QuizScreen";
+import { BanglaSectionScreen } from "@/screens/hub/BanglaScreens";
+import { EnglishSectionScreen } from "@/screens/hub/EnglishScreens";
+import { PoemListScreen, PoemScreen, StoryListScreen, StoryScreen } from "@/screens/hub/ReadingScreens";
 
 const TABLE: [string, ComponentType][] = [
   [ROUTES.landing, LandingScreen], [ROUTES.signup, SignUpScreen], [ROUTES.login, LoginScreen], [ROUTES.safety, SafetyScreen],
@@ -31,6 +41,13 @@ const TABLE: [string, ComponentType][] = [
   [ROUTES.stories, StoriesScreen], [ROUTES.rewards, RewardsScreen], [ROUTES.badges, BadgesScreen], [ROUTES.me, MeScreen],
   [ROUTES.buddy, BuddyScreen], [ROUTES.parent, ParentDashboardScreen], [ROUTES.parentChildren, ChildrenScreen],
   [ROUTES.parentProgress, ProgressScreen], [ROUTES.parentSettings, ParentSettingsScreen], [ROUTES.admin, AdminScreen],
+  [ROUTES.bnHome, BanglaHomeScreen], [ROUTES.bnNumbers, BnNumbersScreen], [ROUTES.bnNumberGroup, BnNumberGroupScreen],
+  [ROUTES.bnLesson, BnLessonScreen], [ROUTES.bnQuiz, BnQuizScreen], [ROUTES.bnProgress, BnProgressScreen],
+  [ROUTES.hub, HubHomeScreen], [ROUTES.hubProgress, HubProgressScreen], [ROUTES.hubQuiz, HubQuizScreen],
+  [ROUTES.hubBangla, BanglaFolderScreen], [ROUTES.hubBanglaSection, BanglaSectionScreen],
+  [ROUTES.hubEnglish, EnglishFolderScreen], [ROUTES.hubEnglishSection, EnglishSectionScreen],
+  [ROUTES.hubMath, MathFolderScreen], [ROUTES.hubMathPuzzles, MathPuzzlesScreen],
+  [ROUTES.hubPoems, PoemListScreen], [ROUTES.hubPoem, PoemScreen], [ROUTES.hubStories, StoryListScreen], [ROUTES.hubStory, StoryScreen],
 ];
 
 /*

@@ -31,7 +31,7 @@ function Body() {
 
   return (
     <div className="grid gap-5">
-      <ChildSwitcher kids={fam.data.children} selected={child.id} onSelect={select} />
+      <ChildSwitcher profiles={fam.data.children} selected={child.id} onSelect={select} />
 
       <section aria-labelledby="subjects" className="grid gap-3">
         <h2 id="subjects" className="text-xl">{child.name}&apos;s subjects</h2>

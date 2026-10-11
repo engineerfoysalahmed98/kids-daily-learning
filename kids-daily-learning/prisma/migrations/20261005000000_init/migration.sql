@@ -438,4 +438,3 @@ ALTER TABLE "Notification" ADD CONSTRAINT "Notification_parentId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "Notification" ADD CONSTRAINT "Notification_childId_fkey" FOREIGN KEY ("childId") REFERENCES "Child"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-

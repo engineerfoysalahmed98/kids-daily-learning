@@ -7,6 +7,7 @@ import { Link, useNav } from "@/nav/nav";
 import { ChildShell } from "@/ui/shells/ChildShell";
 import { Blob, ProgressBar, Skeleton, EmptyState } from "@/ui/primitives";
 import { toneOf, BORDER } from "@/ui/colors";
+import { FOLDERS, HUB } from "@/core/hub";
 import { BackButton, DifficultyDots, NotFound } from "./shared";
 
 const SUBJECT_TRACKS: Record<SubjectId, Track[]> = {
@@ -25,6 +26,21 @@ function LearnBody() {
         <h1 className="text-3xl sm:text-4xl">Learn 📚</h1>
         <p className="font-bold text-muted">Pick a subject to practise anything you like.</p>
       </div>
+      <section aria-labelledby="hub-h" className="grid gap-3">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <h2 id="hub-h" className="text-2xl"><span lang="bn">শিখি</span> · Learning Hub</h2>
+          <Link to={HUB} className="btn-ghost btn-sm">All folders →</Link>
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {FOLDERS.map((f) => (
+            <Link key={f.id} to={f.href} lang={f.lang} className={`card flex flex-col items-center gap-2 p-4 text-center transition hover:-translate-y-0.5 ${BORDER[f.tone]}`}>
+              <Blob tone={f.tone} emoji={f.icon} />
+              <span className="font-display text-lg font-semibold leading-tight">{f.title}</span>
+              <span className="text-xs font-bold text-muted" lang={f.lang === "bn" ? "en" : "bn"}>{f.en}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
       {subjects.length === 0 ? <EmptyState title="No subjects switched on" body="Ask a grown-up to turn subjects on in Parent Settings." /> : (
         <div className="grid gap-4 sm:grid-cols-2">
           {subjects.map((s) => {
