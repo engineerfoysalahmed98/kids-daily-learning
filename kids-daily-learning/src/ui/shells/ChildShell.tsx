@@ -12,7 +12,7 @@ import { dayKey } from "@/core/engine";
 
 const NAV = [
   { to: "/home", icon: "🏠", label: "Home" },
-  { to: "/learn", icon: "📚", label: "Learn" },
+  { to: "/shikhi", icon: "📚", label: "Learn" },
   { to: "/games", icon: "🎮", label: "Games" },
   { to: "/stories", icon: "📖", label: "Stories" },
   { to: "/rewards", icon: "🏆", label: "Rewards" },
@@ -25,7 +25,7 @@ export const useChildPrefs = () => useContext(PrefsContext);
 
 function isActive(path: string, to: string) {
   if (to === "/home") return path === "/home";
-  if (to === "/learn") return path.startsWith("/learn") || path.startsWith("/lesson") || path.startsWith("/quiz");
+  if (to === "/shikhi") return path.startsWith("/shikhi") || path.startsWith("/learn") || path.startsWith("/lesson") || path.startsWith("/quiz");
   if (to === "/rewards") return path.startsWith("/rewards") || path.startsWith("/badges");
   if (to === "/stories") return path.startsWith("/stories") || path.startsWith("/read");
   if (to === "/games") return path.startsWith("/games") || path.startsWith("/memory");
