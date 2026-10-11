@@ -5,7 +5,9 @@ import { Link } from "@/nav/nav";
 import { useBnProgress } from "@/state/bnGuestStore";
 import { useHubProgress } from "@/state/hubStore";
 import { BORDER } from "@/ui/colors";
-import { Blob, ProgressBar, StatChip } from "@/ui/primitives";
+import { Blob, ProgressBar, Skeleton, StatChip } from "@/ui/primitives";
+import { useChildData } from "@/state/useChild";
+import { SubjectCards } from "@/screens/child/LearnScreens";
 import { FolderCard, HubNotFound, HubShell, PageTitle, SectionCard, useAllStars, useFolderProgress } from "./shared";
 
 /** /shikhi — the five learning folders. */
@@ -18,16 +20,23 @@ export function HubHomeScreen() {
       <section aria-label="Learning folders" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {FOLDERS.map((f) => <FolderCard key={f.id} folder={f} />)}
       </section>
-      <Link to="/learn" className="card flex items-center gap-4 p-4 transition hover:-translate-y-0.5">
-        <Blob tone="sun" emoji="🧭" />
-        <span className="min-w-0 flex-1">
-          <span className="block font-display text-xl font-semibold">আরও বিষয় · More subjects</span>
-          <span className="block text-sm font-semibold text-muted" lang="en">English, Mathematics, Science, General Knowledge, Creativity and Good Habits</span>
-        </span>
-        <span className="text-2xl" aria-hidden="true">→</span>
-      </Link>
+      <MoreSubjects />
       <Link to={`${HUB}/progress`} className="btn-secondary w-full sm:w-fit">🏆 আমার অগ্রগতি · My progress</Link>
     </HubShell>
+  );
+}
+
+/** The original six subjects, below the five folders. Content is public, so guests see them too. */
+function MoreSubjects() {
+  const { progress, content } = useChildData();
+  return (
+    <section aria-labelledby="more-subjects-h" className="grid gap-3">
+      <div>
+        <h2 id="more-subjects-h" className="text-2xl">More Subjects · <span lang="bn">আরও বিষয়</span></h2>
+        <p className="font-semibold text-muted" lang="en">English, Mathematics, Science, General Knowledge, Creativity and Good Habits</p>
+      </div>
+      {content ? <SubjectCards content={content} progress={progress} titleAs="h3" /> : <Skeleton className="h-48" />}
+    </section>
   );
 }
 

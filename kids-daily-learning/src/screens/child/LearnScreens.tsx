@@ -1,6 +1,6 @@
 "use client";
 import { useMemo } from "react";
-import type { Level, SubjectId, Track } from "@/core/types";
+import type { ChildProgress, ContentStore, Level, SubjectId, Track } from "@/core/types";
 import { baseLevel, mastery, practiceId, unitsFor } from "@/core/engine";
 import { useChildData } from "@/state/useChild";
 import { Link, useNav } from "@/nav/nav";
@@ -17,9 +17,6 @@ const SUBJECT_TRACKS: Record<SubjectId, Track[]> = {
 function LearnBody() {
   const { progress, content } = useChildData();
   if (!progress || !content) return <Skeleton className="h-96" />;
-  const m = mastery(progress.completions);
-  const allowed = progress.child.settings.allowedTracks;
-  const subjects = content.subjects.filter((s) => s.enabled && SUBJECT_TRACKS[s.id].some((t) => allowed.includes(t)));
   return (
     <div className="grid gap-6">
       <div>
@@ -41,35 +38,50 @@ function LearnBody() {
           ))}
         </div>
       </section>
-      {subjects.length === 0 ? <EmptyState title="No subjects switched on" body="Ask a grown-up to turn subjects on in Parent Settings." /> : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {subjects.map((s) => {
-            const track = SUBJECT_TRACKS[s.id][0];
-            const tone = toneOf(s.color);
-            const pct = m[track];
-            const count = progress.completions.filter((c) => SUBJECT_TRACKS[s.id].includes(c.track) && !c.repeat).length;
-            return (
-              <Link key={s.id} to={`/learn/${s.id}`} className={`card flex flex-col gap-3 p-5 transition hover:-translate-y-0.5 ${BORDER[tone]}`}>
-                <div className="flex items-center gap-4">
-                  <Blob tone={tone} emoji={s.icon} size="lg" />
-                  <div className="min-w-0">
-                    <h2 className="text-2xl">{s.name}</h2>
-                    <p className="text-sm font-bold text-muted">{s.topics.slice(0, 3).join(" · ")}{s.topics.length > 3 ? " …" : ""}</p>
-                  </div>
-                </div>
-                {pct !== null && pct !== undefined ? (
-                  <div className="grid gap-1">
-                    <div className="flex justify-between text-sm font-extrabold"><span className="text-muted">Mastery</span><span className="tnum">{pct}%</span></div>
-                    <ProgressBar value={pct} tone={tone} label={`${s.name} mastery`} size="sm" />
-                  </div>
-                ) : (
-                  <p className="text-sm font-extrabold text-muted">{count ? `${count} activities done` : "Not started yet — try it! ✨"}</p>
-                )}
-              </Link>
-            );
-          })}
-        </div>
-      )}
+      <SubjectCards content={content} progress={progress} />
+    </div>
+  );
+}
+
+/**
+ * The six original subject cards (English, Mathematics, Science, General
+ * Knowledge, Creativity, Good Habits). Used on /learn and in the Learning Hub's
+ * "More Subjects" section. Without a learner profile (a guest who has not set
+ * one up yet) every enabled subject is shown; with one, the parent's subject
+ * settings and the child's mastery are respected, exactly as before.
+ */
+export function SubjectCards({ content, progress, titleAs: Title = "h2" }: { content: ContentStore; progress?: ChildProgress; titleAs?: "h2" | "h3" }) {
+  const m = progress ? mastery(progress.completions) : undefined;
+  const allowed = progress?.child.settings.allowedTracks;
+  const subjects = content.subjects.filter((s) => s.enabled && (!allowed || SUBJECT_TRACKS[s.id].some((t) => allowed.includes(t))));
+  if (subjects.length === 0) return <EmptyState title="No subjects switched on" body="Ask a grown-up to turn subjects on in Parent Settings." />;
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      {subjects.map((s) => {
+        const track = SUBJECT_TRACKS[s.id][0];
+        const tone = toneOf(s.color);
+        const pct = m?.[track];
+        const count = progress ? progress.completions.filter((c) => SUBJECT_TRACKS[s.id].includes(c.track) && !c.repeat).length : 0;
+        return (
+          <Link key={s.id} to={`/learn/${s.id}`} className={`card flex flex-col gap-3 p-5 transition hover:-translate-y-0.5 ${BORDER[tone]}`}>
+            <div className="flex items-center gap-4">
+              <Blob tone={tone} emoji={s.icon} size="lg" />
+              <div className="min-w-0">
+                <Title className="text-2xl">{s.name}</Title>
+                <p className="text-sm font-bold text-muted">{s.topics.slice(0, 3).join(" · ")}{s.topics.length > 3 ? " …" : ""}</p>
+              </div>
+            </div>
+            {pct !== null && pct !== undefined ? (
+              <div className="grid gap-1">
+                <div className="flex justify-between text-sm font-extrabold"><span className="text-muted">Mastery</span><span className="tnum">{pct}%</span></div>
+                <ProgressBar value={pct} tone={tone} label={`${s.name} mastery`} size="sm" />
+              </div>
+            ) : (
+              <p className="text-sm font-extrabold text-muted">{count ? `${count} activities done` : "Not started yet — try it! ✨"}</p>
+            )}
+          </Link>
+        );
+      })}
     </div>
   );
 }
