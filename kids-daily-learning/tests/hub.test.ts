@@ -3,7 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   ALL_BN_LETTERS, ALPHABET, AGE_BANDS, BN_SENTENCES, buildHubQuiz, CONSONANTS, countDone, EN_SENTENCES, emptyHubProgress, FOLDERS,
   GENERATED_QUIZ_IDS, HUB_STORIES, isDone, isHubQuizId, markDone, mathCompletion, parseHubProgress, POEMS, recordHubQuiz, awardStar,
-  SPELLING_WORDS, VOWELS, findBnLetter, quizBackHref, MATH_PUZZLES,
+  SPELLING_WORDS, VOWELS, findBnLetter, quizBackHref, MATH_PUZZLES, BN_EXTRA_WORDS, BN_LETTER_GUIDE, BN_WORD_GUIDE, EN_WORD_SAY,
+  bnLetterGuide, bnWordGuide, enWordSay,
 } from "../src/core/hub";
 import { checkAnswer } from "../src/core/engine";
 import type { Question, Response } from "../src/core/types";
@@ -208,3 +209,40 @@ describe("hub catalog", () => {
     expect(MATH_PUZZLES.every((p) => p.href === `/bangla-math/quiz/${p.id}`)).toBe(true);
   });
 });
+
+describe("pronunciation guides and meanings", () => {
+  const BN = /[\u0980-\u09FF]/;
+  it("every Bangla letter has a name and a sound in English letters", () => {
+    for (const l of ALL_BN_LETTERS) {
+      const g = bnLetterGuide(l.letter);
+      expect(g).toBeTruthy();
+      expect(/^[a-z-]+$/.test(g!.name)).toBe(true);
+      expect(/[a-z]/.test(g!.sound)).toBe(true); // may also name a Bangla letter, e.g. "a longer ই"
+    }
+    expect(Object.keys(BN_LETTER_GUIDE)).toHaveLength(ALL_BN_LETTERS.length);
+  });
+
+  it("every Bangla picture word has a romanised pronunciation and an English meaning", () => {
+    const words = [...ALL_BN_LETTERS.map((l) => l.word), ...BN_EXTRA_WORDS.map((w) => w.word)];
+    for (const w of words) {
+      const g = bnWordGuide(w);
+      expect(g).toBeTruthy();
+      expect(/^[a-z]+$/.test(g!.say)).toBe(true);
+      expect(g!.en.length > 0 && !BN.test(g!.en)).toBe(true);
+    }
+    expect(Object.keys(BN_WORD_GUIDE)).toHaveLength(new Set(words.map((w) => w.normalize("NFC"))).size);
+    expect(bnWordGuide("অজগর")).toEqual({ say: "ojogor", en: "python (a big snake)" });
+    expect(bnWordGuide("কলা")!.en).toBe("banana");
+  });
+
+  it("every English picture and spelling word has a Bangla-script pronunciation", () => {
+    for (const w of [...ALPHABET.map((l) => l.word), ...SPELLING_WORDS.map((w) => w.word)]) {
+      const say = enWordSay(w);
+      expect(say).toBeTruthy();
+      expect(BN.test(say!) && !/[A-Za-z]/.test(say!)).toBe(true);
+    }
+    expect(enWordSay("Apple")).toBe("অ্যাপল");
+    expect(Object.keys(EN_WORD_SAY).every((k) => k === k.toLowerCase())).toBe(true);
+  });
+});
+

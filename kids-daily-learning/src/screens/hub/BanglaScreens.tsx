@@ -2,7 +2,7 @@
 import { useCallback, useState } from "react";
 import { toBn } from "@/core/bangla";
 import {
-  ALL_BN_LETTERS, BN_EXTRA_WORDS, BN_SECTIONS, BN_SENTENCES, CONSONANTS, findSection, HUB, isDone, VOWELS, type BnLetter,
+  ALL_BN_LETTERS, BN_EXTRA_WORDS, BN_SECTIONS, BN_SENTENCES, bnLetterGuide, bnWordGuide, CONSONANTS, findSection, HUB, isDone, VOWELS, type BnLetter,
 } from "@/core/hub";
 import { Link, useNav } from "@/nav/nav";
 import { useHubProgress } from "@/state/hubStore";
@@ -16,6 +16,8 @@ const tone = (i: number) => CARD_TONES[i % CARD_TONES.length];
 
 /** Big letter + picture + word + sentence. */
 function LetterDetail({ l }: { l: BnLetter }) {
+  const lg = bnLetterGuide(l.letter);
+  const wg = bnWordGuide(l.word);
   return (
     <div className="grid justify-items-center gap-3 text-center">
       <p className="font-bangla text-[6rem] font-semibold leading-none">{l.letter}</p>
@@ -25,6 +27,16 @@ function LetterDetail({ l }: { l: BnLetter }) {
         <SpeakButton text={`${l.letter}। ${l.word}। ${l.line}`} lang="bn" label={`${l.word} শুনে নাও`} />
       </p>
       <p className="text-lg font-bold">{l.line}</p>
+      {lg && (
+        <p className="rounded-2xl bg-math/10 px-3 py-2 font-bold">
+          উচ্চারণ: <span lang="en">“{lg.name}” — {lg.sound}</span>
+        </p>
+      )}
+      {wg && (
+        <p className="font-semibold text-muted">
+          {l.word} = <span lang="en">{wg.say} · English: {wg.en}</span>
+        </p>
+      )}
       {l.note && <p className="rounded-2xl bg-sunken px-3 py-2 text-sm font-semibold text-muted">💡 {l.note}</p>}
     </div>
   );
@@ -164,7 +176,8 @@ function Tracing() {
 /** শব্দ শেখা: picture words. */
 function PictureWords() {
   const words = [...ALL_BN_LETTERS.map((l) => ({ key: l.letter, head: l.letter, word: l.word, emoji: l.emoji })),
-    ...BN_EXTRA_WORDS.map((w) => ({ key: w.word, head: "", word: w.word, emoji: w.emoji }))];
+    ...BN_EXTRA_WORDS.map((w) => ({ key: w.word, head: "", word: w.word, emoji: w.emoji }))]
+    .map((w) => ({ ...w, guide: bnWordGuide(w.word) }));
   return (
     <>
       <p className="font-semibold text-muted">ছবি দেখো, শব্দ পড়ো। 🔊 থাকলে শুনেও নিতে পারো।</p>
@@ -175,6 +188,7 @@ function PictureWords() {
             <span className="min-w-0 flex-1">
               {w.head && <span className="block font-bangla text-lg font-bold text-muted">{w.head} —</span>}
               <span className="block font-display text-2xl font-semibold">{w.word}</span>
+              {w.guide && <span className="block text-sm font-semibold text-muted" lang="en">{w.guide.say} · {w.guide.en}</span>}
             </span>
             <SpeakButton text={w.word} lang="bn" label={`${w.word} শুনে নাও`} />
           </li>

@@ -5,3 +5,4 @@ export * from "./stories";
 export * from "./quizzes";
 export * from "./progress";
 export * from "./catalog";
+export * from "./pronunciation";

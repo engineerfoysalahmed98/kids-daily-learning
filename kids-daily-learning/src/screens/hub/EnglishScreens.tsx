@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useState } from "react";
-import { ALPHABET, EN_SECTIONS, EN_SENTENCES, findSection, HUB, isDone, SPELLING_WORDS, type EnLetter } from "@/core/hub";
+import { ALPHABET, EN_SECTIONS, EN_SENTENCES, enWordSay, findSection, HUB, isDone, SPELLING_WORDS, type EnLetter } from "@/core/hub";
 import { Link, useNav } from "@/nav/nav";
 import { useHubProgress } from "@/state/hubStore";
 import { Modal } from "@/ui/primitives";
@@ -53,6 +53,7 @@ function AlphabetGrid({ mode }: { mode: "abc" | "phonics" }) {
                 <SpeakButton text={mode === "abc" ? `${cur.upper}. ${cur.upper} is for ${cur.word}.` : `${cur.word}. ${cur.word}.`} lang="en" label={`Hear ${cur.word}`} />
               </p>
               <p className="text-lg font-bold" lang="bn">বাংলা অর্থ: {cur.bn} · অক্ষরের নাম: “{cur.name}”</p>
+              {enWordSay(cur.word) && <p className="font-bold text-muted" lang="bn">উচ্চারণ: {cur.word} = {enWordSay(cur.word)}</p>}
               {mode === "phonics" && (
                 <p className="rounded-2xl bg-math/10 px-4 py-2 text-lg font-bold">
                   Sound: <span className="font-display">{cur.sound}</span> <span lang="bn">— বাংলায় প্রায় “{cur.soundBn}”-এর মতো</span>
@@ -137,6 +138,7 @@ function WordsScreen() {
             <span className="min-w-0 flex-1">
               <span className="block font-display text-2xl font-semibold">{w.word}</span>
               <span className="block font-bold text-muted" lang="bn">{w.bn}</span>
+              {enWordSay(w.word) && <span className="block text-sm font-semibold text-muted" lang="bn">উচ্চারণ: {enWordSay(w.word)}</span>}
             </span>
             <SpeakButton text={w.word} lang="en" label={`Hear ${w.word}`} />
           </li>
@@ -165,7 +167,7 @@ function SpellingScreen() {
                     <span key={j} aria-hidden="true" className="grid h-11 w-10 place-items-center rounded-xl bg-surface font-display text-2xl font-semibold">{h ? "?" : c}</span>
                   ))}
                 </span>
-                <span className="font-bold text-muted" lang="bn">{w.bn}</span>
+                <span className="font-bold text-muted" lang="bn">{w.bn}{enWordSay(w.word) ? ` · উচ্চারণ: ${enWordSay(w.word)}` : ""}</span>
               </span>
               <SpeakButton text={w.word} lang="en" label={`Hear ${w.word}`} />
               <button type="button" className="btn-secondary btn-sm" aria-pressed={h} onClick={() => toggle(w.word)}>{h ? "Show" : "Hide"}</button>
