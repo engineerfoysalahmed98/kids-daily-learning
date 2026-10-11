@@ -10,6 +10,8 @@ import { checkAnswer, createRng } from "../src/core/engine";
 import type { Question, Response } from "../src/core/types";
 
 const BN_DIGIT = /^[০-৯]+$/;
+/** Time limit for the exhaustive quiz sweep below (the vitest default is 5 s). */
+const SWEEP_TIMEOUT_MS = 30_000;
 
 function correctResponse(q: Question): Response {
   switch (q.type) {
@@ -126,6 +128,10 @@ describe("Bangla quizzes are mathematically correct", () => {
     }
   });
 
+  // Exhaustive sweep: 25 quiz ids × 150 seeds ≈ 21,000 questions and ~187,000
+  // assertions. Generation itself takes ~0.2 s; the time is in vitest's expect(),
+  // which can exceed the 5 s default on slower machines, so this test gets a
+  // longer timeout. Every assertion is unchanged.
   it("every generated question is well-formed and its marked answer is right", () => {
     let checked = 0;
     for (const id of ALL_QUIZ_IDS) {
@@ -183,7 +189,7 @@ describe("Bangla quizzes are mathematically correct", () => {
       }
     }
     expect(checked > 10000).toBe(true);
-  });
+  }, SWEEP_TIMEOUT_MS);
 
   it("counting pictures show exactly the right number of objects", () => {
     for (let seed = 0; seed < 200; seed++) {

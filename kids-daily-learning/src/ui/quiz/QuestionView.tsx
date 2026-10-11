@@ -14,8 +14,20 @@ export interface QuestionViewProps {
 }
 
 const QV_TEXT = {
-  en: { letters: "ABCD", correct: "correct answer", readQ: "Read the question aloud", trueL: "True", falseL: "False", yourAnswer: "Your answer", typeHere: "Type your answer", check: "Check" },
-  bn: { letters: "কখগঘ", correct: "সঠিক উত্তর", readQ: "প্রশ্নটি পড়ে শোনাও", trueL: "ঠিক", falseL: "ভুল", yourAnswer: "তোমার উত্তর", typeHere: "উত্তর লেখো", check: "মিলিয়ে দেখো" },
+  en: {
+    letters: "ABCD", correct: "correct answer", readQ: "Read the question aloud", trueL: "True", falseL: "False", yourAnswer: "Your answer", typeHere: "Type your answer", check: "Check",
+    orderHint: "Drag the cards (or use the arrows) to put them in order.", orderList: "Items to put in order",
+    moveUp: (item: string) => `Move ${item} up`, moveDown: (item: string) => `Move ${item} down`,
+    matchHint: "Tap a word on the left, then its match on the right. You can also drag.", leftSide: "Left side", rightSide: "Right side",
+    matchedWith: (right: string, left: string) => `${right}, matched with ${left}`,
+  },
+  bn: {
+    letters: "কখগঘ", correct: "সঠিক উত্তর", readQ: "প্রশ্নটি পড়ে শোনাও", trueL: "ঠিক", falseL: "ভুল", yourAnswer: "তোমার উত্তর", typeHere: "উত্তর লেখো", check: "মিলিয়ে দেখো",
+    orderHint: "কার্ডগুলো টেনে (বা তীর চিহ্নে চাপ দিয়ে) ঠিক ক্রমে সাজাও।", orderList: "সাজানোর কার্ড",
+    moveUp: (item: string) => `${item} উপরে নাও`, moveDown: (item: string) => `${item} নিচে নাও`,
+    matchHint: "বাঁ পাশের একটি শব্দে চাপ দাও, তারপর ডান পাশে তার জোড়া বেছে নাও। টেনেও মেলাতে পারো।", leftSide: "বাঁ পাশ", rightSide: "ডান পাশ",
+    matchedWith: (right: string, left: string) => `${right}, ${left}-এর সাথে মেলানো`,
+  },
 } as const;
 
 const MATCH_COLORS = ["bg-math/25 border-math", "bg-english/25 border-english", "bg-science/25 border-science", "bg-story/25 border-story", "bg-creativity/25 border-creativity"];
@@ -52,8 +64,8 @@ export function QuestionView({ q, answered, onAnswer, lang = "en" }: QuestionVie
       {q.type === "image" && <PictureChoice q={q} answered={answered} onPick={(i) => onAnswer({ type: "image", choice: i })} />}
       {q.type === "tf" && <TrueFalse answer={q.answer} answered={answered} onPick={(v) => onAnswer({ type: "tf", value: v })} t={t} />}
       {q.type === "type" && <TypeAnswer key={q.id} q={q} answered={answered} onSubmit={(text) => onAnswer({ type: "type", text })} t={t} />}
-      {q.type === "order" && <OrderAnswer key={q.id} q={q} answered={answered} onSubmit={(items) => onAnswer({ type: "order", items })} />}
-      {q.type === "match" && <MatchAnswer key={q.id} q={q} answered={answered} onSubmit={(pairs) => onAnswer({ type: "match", pairs })} />}
+      {q.type === "order" && <OrderAnswer key={q.id} q={q} answered={answered} t={t} onSubmit={(items) => onAnswer({ type: "order", items })} />}
+      {q.type === "match" && <MatchAnswer key={q.id} q={q} answered={answered} t={t} onSubmit={(pairs) => onAnswer({ type: "match", pairs })} />}
     </div>
   );
 }
@@ -132,7 +144,7 @@ function TypeAnswer({ q, answered, onSubmit, t = QV_TEXT.en }: { q: Extract<Ques
 
 // ---------------------------------------------------------------- drag & drop ordering
 
-function OrderAnswer({ q, answered, onSubmit }: { q: OrderQuestion; answered: QuestionViewProps["answered"]; onSubmit: (items: string[]) => void }) {
+function OrderAnswer({ q, answered, onSubmit, t = QV_TEXT.en }: { q: OrderQuestion; answered: QuestionViewProps["answered"]; onSubmit: (items: string[]) => void; t?: QvText }) {
   const initial = useMemo(() => {
     const rng = createRng(q.id);
     let s = rng.shuffle(q.items);
@@ -172,8 +184,8 @@ function OrderAnswer({ q, answered, onSubmit }: { q: OrderQuestion; answered: Qu
 
   return (
     <div className="grid gap-3">
-      <p className="text-sm font-bold text-muted">Drag the cards (or use the arrows) to put them in order.</p>
-      <ol ref={listRef} className="grid gap-2.5" aria-label="Items to put in order">
+      <p className="text-sm font-bold text-muted">{t.orderHint}</p>
+      <ol ref={listRef} className="grid gap-2.5" aria-label={t.orderList}>
         {items.map((item, i) => (
           <li key={item}
             className={`flex min-h-[60px] touch-none select-none items-center gap-2 rounded-2xl border-[3px] bg-surface pl-3 pr-1.5 text-lg font-bold ${drag?.index === i ? "z-10 border-math shadow-soft" : "border-line"} ${locked ? (correctAt(i) ? "border-good bg-good/10" : "border-oops bg-oops/10") : ""}`}
@@ -183,22 +195,22 @@ function OrderAnswer({ q, answered, onSubmit }: { q: OrderQuestion; answered: Qu
             <span className="flex-1">{item}</span>
             {!locked && (
               <span className="flex gap-1">
-                <button type="button" className="grid h-11 w-11 place-items-center rounded-xl bg-sunken" aria-label={`Move ${item} up`} disabled={i === 0} onPointerDown={(e) => e.stopPropagation()} onClick={() => move(i, i - 1)}>▲</button>
-                <button type="button" className="grid h-11 w-11 place-items-center rounded-xl bg-sunken" aria-label={`Move ${item} down`} disabled={i === items.length - 1} onPointerDown={(e) => e.stopPropagation()} onClick={() => move(i, i + 1)}>▼</button>
+                <button type="button" className="grid h-11 w-11 place-items-center rounded-xl bg-sunken" aria-label={t.moveUp(item)} disabled={i === 0} onPointerDown={(e) => e.stopPropagation()} onClick={() => move(i, i - 1)}>▲</button>
+                <button type="button" className="grid h-11 w-11 place-items-center rounded-xl bg-sunken" aria-label={t.moveDown(item)} disabled={i === items.length - 1} onPointerDown={(e) => e.stopPropagation()} onClick={() => move(i, i + 1)}>▼</button>
               </span>
             )}
           </li>
         ))}
       </ol>
       {q.sentence && <p className="rounded-2xl bg-sunken px-4 py-3 text-lg" aria-live="polite">“{items.join(" ")}.”</p>}
-      {!locked && <button type="button" className="btn-primary w-full" onClick={() => onSubmit(items)}>Check</button>}
+      {!locked && <button type="button" className="btn-primary w-full" onClick={() => onSubmit(items)}>{t.check}</button>}
     </div>
   );
 }
 
 // ---------------------------------------------------------------- matching
 
-function MatchAnswer({ q, answered, onSubmit }: { q: MatchQuestion; answered: QuestionViewProps["answered"]; onSubmit: (pairs: Record<string, string>) => void }) {
+function MatchAnswer({ q, answered, onSubmit, t = QV_TEXT.en }: { q: MatchQuestion; answered: QuestionViewProps["answered"]; onSubmit: (pairs: Record<string, string>) => void; t?: QvText }) {
   const rights = useMemo(() => createRng(q.id).shuffle(q.pairs.map((p) => p[1])), [q]);
   const [pairs, setPairs] = useState<Record<string, string>>({});
   const [selLeft, setSelLeft] = useState<string | null>(null);
@@ -220,9 +232,9 @@ function MatchAnswer({ q, answered, onSubmit }: { q: MatchQuestion; answered: Qu
 
   return (
     <div className="grid gap-4">
-      <p className="text-sm font-bold text-muted">Tap a word on the left, then its match on the right. You can also drag.</p>
+      <p className="text-sm font-bold text-muted">{t.matchHint}</p>
       <div className="grid grid-cols-2 gap-3">
-        <ul className="grid content-start gap-2.5" aria-label="Left side">
+        <ul className="grid content-start gap-2.5" aria-label={t.leftSide}>
           {q.pairs.map(([left]) => {
             const matched = pairs[left];
             return (
@@ -239,7 +251,7 @@ function MatchAnswer({ q, answered, onSubmit }: { q: MatchQuestion; answered: Qu
             );
           })}
         </ul>
-        <ul className="grid content-start gap-2.5" aria-label="Right side">
+        <ul className="grid content-start gap-2.5" aria-label={t.rightSide}>
           {rights.map((right) => {
             const l = leftFor(right);
             return (
@@ -247,7 +259,7 @@ function MatchAnswer({ q, answered, onSubmit }: { q: MatchQuestion; answered: Qu
                 <button type="button" disabled={locked} draggable={!locked}
                   onDragStart={(e) => e.dataTransfer.setData("text/plain", right)}
                   onClick={() => selLeft && connect(selLeft, right)}
-                  aria-label={l ? `${right}, matched with ${l}` : right}
+                  aria-label={l ? t.matchedWith(right, l) : right}
                   className={`flex min-h-[64px] w-full items-center justify-center rounded-2xl border-[3px] px-3 text-center font-extrabold transition disabled:cursor-default ${l ? colorOf(l) : "border-dashed border-line bg-surface"} ${right.length <= 3 ? "text-4xl" : "text-base"} ${selLeft && !l ? "hover:border-math" : ""}`}>
                   {right}
                 </button>
@@ -261,7 +273,7 @@ function MatchAnswer({ q, answered, onSubmit }: { q: MatchQuestion; answered: Qu
           {q.pairs.map(([l, r]) => <li key={l}>{l} → {r}</li>)}
         </ul>
       )}
-      {!locked && <button type="button" className="btn-primary w-full" disabled={Object.keys(pairs).length < q.pairs.length} onClick={() => onSubmit(pairs)}>Check</button>}
+      {!locked && <button type="button" className="btn-primary w-full" disabled={Object.keys(pairs).length < q.pairs.length} onClick={() => onSubmit(pairs)}>{t.check}</button>}
     </div>
   );
 }

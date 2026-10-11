@@ -70,6 +70,19 @@ export const ROUTES = {
   bnLesson: "/bangla-math/learn/:op",
   bnQuiz: "/bangla-math/quiz/:id",
   bnProgress: "/bangla-math/progress",
+  hub: "/shikhi",
+  hubProgress: "/shikhi/progress",
+  hubQuiz: "/shikhi/quiz/:id",
+  hubBangla: "/shikhi/bangla",
+  hubBanglaSection: "/shikhi/bangla/:section",
+  hubEnglish: "/shikhi/english",
+  hubEnglishSection: "/shikhi/english/:section",
+  hubMath: "/shikhi/math",
+  hubMathPuzzles: "/shikhi/math/puzzles",
+  hubPoems: "/shikhi/poems",
+  hubPoem: "/shikhi/poems/:id",
+  hubStories: "/shikhi/stories",
+  hubStory: "/shikhi/stories/:id",
 } as const;
 
 export function matchRoute(pattern: string, path: string): Record<string, string> | null {

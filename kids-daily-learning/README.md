@@ -141,6 +141,25 @@ Open to everyone: **no login, no email**. Bangla is the default language in this
 - **Audio:** the 🔊 button uses the device's Bangla text-to-speech voice when one exists and is hidden otherwise — nothing depends on audio.
 - **Font:** Hind Siliguri via `next/font` (`--font-bangla`), placed after the Latin fonts so Bangla glyphs pick it up everywhere.
 
+## শিখি · Learning Hub — `/shikhi`
+
+Open to everyone (guests included): **no login, no email**. Linked from the public header ("📚 শিখি / Learn") and from the child **Learn** tab.
+
+| Route | What it does |
+|---|---|
+| `/shikhi` | Five folder cards (বাংলা শিখি, English Learning, বাংলা গণিত, কবিতা ও ছড়া, গল্পের বই) with progress and "শুরু করি / Start Learning" |
+| `/shikhi/bangla/[shoroborno\|byanjonborno\|chena\|lekha\|shobdo\|bakko]` | 11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ letter cards (picture + word + sentence), flip cards, finger tracing, picture words, sentences |
+| `/shikhi/english/[abc\|case\|phonics\|words\|spelling\|reading]` | A–Z with Bangla meanings, upper/lowercase + tracing, phonics sounds, picture words, spelling, sentences |
+| `/shikhi/math`, `/shikhi/math/puzzles` | Folder page for the existing `/bangla-math` lessons and its picture quizzes (progress read from that section's store) |
+| `/shikhi/poems`, `/shikhi/poems/[id]` | 12 rhymes by age (৪–৬, ৭–৯, ১০–১২) with read-along line highlighting and questions |
+| `/shikhi/stories`, `/shikhi/stories/[id]` | Bangla and English stories filtered by language and age, read-along, moral, questions |
+| `/shikhi/quiz/[id]`, `/shikhi/progress` | Quizzes (shared `QuizRunner`) and a progress overview |
+
+- **Code:** content, quiz generators, catalog and progress rules in `src/core/hub/` (pure, tested in `tests/hub.test.ts`); screens in `src/screens/hub/`; `src/ui/TracingPad.tsx`, `src/ui/ReadAlong.tsx`; device storage in `src/state/hubStore.ts` (`kdl-learning-hub-v1`, separate from the math store — nothing existing is reset).
+- **Stars:** one ⭐ per correct quiz answer (once per question) and per first successful tracing of a letter. A quiz counts as done at ≥ 60%.
+- **Audio:** read-aloud uses the device's text-to-speech voice and the 🔊/▶️ buttons are hidden when no voice exists; line-by-line reading always works.
+- **Copyright:** poems are original or anonymous traditional লোকছড়া; Bangla stories are original except a retelling of Aesop's "The Crow and the Pitcher"; English stories are the app's existing originals. No database tables, migrations or environment variables were added.
+
 ---
 
 ## Security & privacy

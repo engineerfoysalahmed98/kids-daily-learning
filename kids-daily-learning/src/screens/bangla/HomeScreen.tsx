@@ -76,5 +76,5 @@ function HomeBody() {
 }
 
 export function BanglaHomeScreen() {
-  return <BanglaShell><HomeBody /></BanglaShell>;
+  return <BanglaShell back={{ to: "/shikhi/math", label: "শিখি · বাংলা গণিত ফোল্ডার" }}><HomeBody /></BanglaShell>;
 }

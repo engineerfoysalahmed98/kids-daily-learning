@@ -15,7 +15,7 @@ const PUBLIC_PAGES = ["/", "/login", "/signup", "/safety"];
  * only built-in content and save guest progress on the device (localStorage);
  * they call no private API, so every /api route keeps its existing protection.
  */
-const PUBLIC_PREFIXES = ["/bangla-math"];
+const PUBLIC_PREFIXES = ["/bangla-math", "/shikhi"];
 /** Child learning pages (and their sub-pages, e.g. /learn/math, /quiz/<id>). */
 const LEARNING_PAGES = ["/home", "/learn", "/lesson", "/quiz", "/read", "/stories", "/games", "/memory", "/create", "/habit", "/complete", "/rewards", "/badges", "/me", "/buddy"];
 const PUBLIC_API = ["/api/auth/login", "/api/auth/signup", "/api/auth/session", "/api/auth/logout"];
